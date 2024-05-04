@@ -1,0 +1,29 @@
+@import '/app/globals.scss';
+
+.room {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  &_wrap {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    li {
+      padding: 0.5rem;
+      font-size: 0.8rem;
+      border-radius: 5px;
+      border: 1px solid $secondary-color;
+      border-left: 3px solid $primary-color;
+      transition: all 0.5s ease-out;
+    }
+    li:hover {
+      color: white;
+      background-color: $primary-color;
+    }
+    .selected {
+      color: white;
+      background-color: $primary-color;
+    }
+  }
+}

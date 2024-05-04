@@ -1,0 +1,33 @@
+@import "/app/globals.scss";
+.mobile_menu {
+  display: none;
+}
+
+@media (max-width: 480px) {
+  .mobile_menu {
+    width: 100vw;
+    padding: 0rem 0rem;
+    overflow: hidden;
+    background-color: white;
+    box-shadow: rgba(9, 30, 66, 0.25) 0px 4px 8px -2px,
+      rgba(9, 30, 66, 0.08) 0px 0px 0px 1px;
+    color: $primary-color;
+    display: block;
+    padding: 0 1rem;
+    &_links {
+      display: flex;
+      gap: 0.3rem;
+      align-items: center;
+      li {
+        padding: 0.5rem;
+      }
+      img {
+        border-radius: 50%;
+      }
+      .current {
+        background-color: $light-green;
+        border-radius: 5px;
+      }
+    }
+  }
+}

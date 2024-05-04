@@ -1,0 +1,58 @@
+@import '/app/globals.scss';
+
+.notificationHeader {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0rem 2rem;
+  color: $primary-color;
+  background-color: $secondary-color;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  button {
+    font-size: 1rem;
+    color: $primary-color;
+    background-color: Transparent;
+    border: none;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    cursor: pointer;
+  }
+  button:hover {
+    cursor: pointer;
+    border: none;
+    background-color: Transparent;
+    color: $primary-color;
+  }
+  &_content {
+    display: none;
+    position: absolute;
+    width: 100%;
+    top: 100%;
+    left: 0;
+    background-color: $secondary-color;
+    list-style: none;
+    font-size: 0.9rem;
+    li {
+      cursor: pointer;
+      padding: 1rem 2rem;
+      border-top: solid 1px rgba($primary-color, 0.25);
+    }
+    li:hover {
+      background-color: white;
+    }
+  }
+}
+.open {
+  .notificationHeader_content {
+    display: block;
+  }
+}
+
+@media (max-width: 1000px) {
+}
+
+@media (max-width: 480px) {
+}

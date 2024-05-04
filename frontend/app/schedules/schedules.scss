@@ -1,0 +1,380 @@
+@import "../globals.scss";
+
+.schedule {
+  color: $gray;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  font-size: 0.9rem;
+  &_header {
+    padding: 0.5rem 1rem;
+    &_filter {
+      &_btn {
+        display: flex;
+        gap: 0.5rem;
+        button {
+          padding: 1rem 1rem;
+        }
+        button:hover {
+          padding: 1rem 1rem;
+        }
+      }
+    }
+  }
+  &_title {
+    padding: 0.5rem 1rem;
+  }
+  &_table {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    &_weekheader {
+      display: flex;
+      text-align: center;
+      gap: 0.2rem;
+      div {
+        width: 12%;
+        font-size: 1.2rem;
+        border: 1px solid $light-gray;
+        border-radius: 10px;
+        padding: 2rem 0;
+      }
+      div:nth-child(1) {
+        border: none;
+      }
+    }
+    &_weekcontent {
+      display: flex;
+      text-align: center;
+      gap: 0.2rem;
+      div {
+        width: 12%;
+        border: 1px solid $light-gray;
+        border-radius: 10px;
+        padding: 1rem 0;
+        display: flex;
+        flex-direction: column;
+        text-align: center;
+        gap: 0.1rem;
+        .courseFull {
+          background-color: $light-pink;
+          width: 500%;
+          padding: 0.2rem 0;
+          margin-left: 0.5rem;
+          z-index: 1000;
+        }
+        .courseFull:hover {
+          cursor: pointer;
+        }
+        .courseHalf:hover {
+          cursor: pointer;
+        }
+        .courseHalf {
+          width: 500%;
+          border: none;
+          padding: 0;
+          display: flex;
+          flex-direction: row;
+          margin-left: 0.5rem;
+          .half {
+            background-color: $light-orange;
+            width: 50%;
+            padding: 0.2rem 0;
+            z-index: 1000;
+          }
+          .orange {
+            background-color: $light-orange;
+            color: $red;
+          }
+          .pink {
+            background-color: $light-pink;
+            color: $red;
+          }
+          .green {
+            background-color: $light-green;
+            color: $green;
+          }
+          .blue {
+            background-color: $light-blue;
+            color: $blue;
+          }
+          .purple {
+            background-color: $light-purple;
+            color: $purple;
+          }
+          .purple {
+            background-color: $light-gray;
+            color: $gray;
+          }
+        }
+        .courseWeekend {
+          background-color: $light-blue;
+          margin-left: 0.5rem;
+          width: 190%;
+          padding: 0.2rem 0;
+          z-index: 1000;
+        }
+        .orange {
+          background-color: $light-orange;
+          color: $red;
+        }
+        .pink {
+          background-color: $light-pink;
+          color: $red;
+        }
+        .green {
+          background-color: $light-green;
+          color: $green;
+        }
+        .blue {
+          background-color: $light-blue;
+          color: $blue;
+        }
+        .purple {
+          background-color: $light-purple;
+          color: $purple;
+        }
+        .gray {
+          background-color: $light-gray;
+          color: $gray;
+        }
+        .orange:hover {
+          background-color: $red;
+          color: $light-orange;
+        }
+        .pink:hover {
+          background-color: $red;
+          color: $light-pink;
+        }
+        .green:hover {
+          background-color: $green;
+          color: $light-green;
+        }
+        .blue:hover {
+          background-color: $blue;
+          color: $light-blue;
+        }
+        .purple:hover {
+          background-color: $purple;
+          color: $light-purple;
+        }
+        .gray:hover {
+          background-color: $gray;
+          color: $light-gray;
+        }
+      }
+      div:nth-child(1) {
+        justify-content: center;
+      }
+    }
+    &_monthheader {
+      display: flex;
+      text-align: center;
+      gap: 0.2rem;
+      div {
+        width: 13%;
+        font-size: 1.2rem;
+        border: 1px solid $light-gray;
+        border-radius: 10px;
+        padding: 2rem 0;
+      }
+    }
+    &_monthcontent {
+      display: flex;
+      text-align: center;
+      gap: 0.2rem;
+      div {
+        width: 13%;
+        border: 1px solid $light-gray;
+        border-radius: 10px;
+        padding: 0.5rem 0;
+        display: flex;
+        flex-direction: column;
+        text-align: center;
+        gap: 0.1rem;
+        .courseFull {
+          background-color: $light-pink;
+          width: 500%;
+          padding: 0.2rem 0;
+          margin-left: 0.5rem;
+          z-index: 1000;
+        }
+        .courseFull:hover {
+          cursor: pointer;
+        }
+        .courseHalf:hover {
+          cursor: pointer;
+        }
+        .courseHalf {
+          width: 500%;
+          border: none;
+          padding: 0;
+          display: flex;
+          flex-direction: row;
+          margin-left: 0.5rem;
+          .half {
+            background-color: $light-orange;
+            width: 50%;
+            padding: 0.2rem 0;
+            z-index: 1000;
+          }
+          .morning {
+            background-color: $light-blue;
+            color: $blue;
+          }
+          .afternoon {
+            background-color: $light-orange;
+            color: $red;
+          }
+          .evening {
+            background-color: $light-gray;
+            color: $gray;
+          }
+          .weekend {
+            background-color: $light-pink;
+            color: $red;
+          }
+          .morning:hover {
+            background-color: $blue;
+            color: $light-blue;
+          }
+          .afternoon:hover {
+            background-color: $red;
+            color: $light-orange;
+          }
+          .evening:hover {
+            background-color: $gray;
+            color: $light-gray;
+          }
+          .weekend:hover {
+            background-color: $red;
+            color: $light-pink;
+          }
+        }
+        .courseWeekend {
+          background-color: $light-blue;
+          margin-left: 0.5rem;
+          width: 190%;
+          padding: 0.2rem 0;
+          z-index: 1000;
+        }
+        .morning {
+          background-color: $light-blue;
+          color: $blue;
+        }
+        .afternoon {
+          background-color: $light-orange;
+          color: $red;
+        }
+        .evening {
+          background-color: $light-gray;
+          color: $gray;
+        }
+        .weekend {
+          background-color: $light-pink;
+          color: $red;
+        }
+        .morning:hover {
+          background-color: $blue;
+          color: $light-blue;
+        }
+        .afternoon:hover {
+          background-color: $red;
+          color: $light-orange;
+        }
+        .evening:hover {
+          background-color: $gray;
+          color: $light-gray;
+        }
+        .weekend:hover {
+          background-color: $red;
+          color: $light-pink;
+        }
+      }
+    }
+    &_listheader {
+      padding-bottom: 0.2rem;
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      text-align: center;
+      font-size: 1.1rem;
+      font-weight: bold;
+      margin: 0 3rem 0 1rem;
+      div {
+        padding: 0.5rem 0;
+        width: 12%;
+        border-bottom: 1px solid $light-gray;
+      }
+    }
+    &_listcontent {
+      padding-bottom: 0.2rem;
+      display: flex;
+      gap: 0.5rem;
+      text-align: center;
+      justify-content: center;
+      margin: 0 3rem 0 1rem;
+      align-items: center;
+      div {
+        padding: 0.5rem;
+        width: 12%;
+      }
+      .morning {
+        background-color: $light-blue;
+        border: solid 1px rgba($blue, 0.2);
+        color: $blue;
+        padding: 0.3rem 0;
+        border-radius: 5px;
+      }
+      .afternoon {
+        background-color: $light-orange;
+        border: solid 1px rgba($red, 0.2);
+        color: $red;
+        padding: 0.3rem 0;
+        border-radius: 5px;
+      }
+      .evening {
+        background-color: $light-gray;
+        border: solid 1px rgba($gray, 0.2);
+        color: $gray;
+        padding: 0.3rem 0;
+        border-radius: 5px;
+      }
+      .weekend {
+        background-color: $light-pink;
+        border: solid 1px rgba($red, 0.2);
+        color: $red;
+        padding: 0.3rem 0;
+        border-radius: 5px;
+      }
+    }
+    .finished {
+      background-color: $finished;
+      border-radius: 10px;
+    }
+    .ongoing {
+      background-color: $ongoing;
+      color: white;
+      border-radius: 10px;
+    }
+    .upcoming {
+      background-color: $upcoming;
+      border-radius: 10px;
+    }
+    .finished:hover {
+      background-color: $highlight-color;
+      color: white;
+    }
+    .ongoing:hover {
+      background-color: $highlight-color;
+      color: white;
+    }
+    .upcoming:hover {
+      background-color: $highlight-color;
+      color: white;
+    }
+    li:hover {
+      cursor: pointer;
+    }
+  }
+}

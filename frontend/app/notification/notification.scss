@@ -1,0 +1,94 @@
+@import '../globals.scss';
+
+.notification {
+  display: flex;
+  flex-direction: column;
+  &_checkbox {
+    border-radius: 10px;
+    border: 1px solid rgba($primary-color, 0.3);
+    display: flex;
+    gap: 1rem;
+    padding: 1rem;
+    width: fit-content;
+  }
+  &_list {
+    margin: 1rem 0rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    li:hover {
+      cursor: pointer;
+      background-color: rgba($light-gray, 0.7);
+    }
+    &_row {
+      border-radius: 5px;
+      padding: 1rem;
+      background-color: rgba($light-gray, 0.3);
+      &_title {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+        justify-content: space-between;
+        padding-right: 2rem;
+        p:nth-child(1) {
+          font-weight: 500;
+        }
+        p:nth-child(2) {
+          font-size: 0.9rem;
+        }
+      }
+      &_detail {
+        display: none;
+      }
+      .selected {
+        display: block;
+        padding: 1rem 0rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        label {
+          font-size: 0.8rem;
+        }
+        &_btn {
+          display: flex;
+          gap: 0.5rem;
+          .approve {
+            border: 1px solid $primary-color;
+            background-color: transparent;
+            color: $primary-color;
+          }
+          .disapprove {
+            border: 1px solid $red;
+            background-color: transparent;
+            color: $red;
+          }
+          .approve:hover {
+            color: $secondary-color;
+            background-color: $primary-color;
+          }
+          .disapprove:hover {
+            color: $delete;
+            background-color: $red;
+          }
+        }
+      }
+    }
+
+    .vacation {
+      border-left: 1rem solid $red;
+    }
+    .changeinfo {
+      border-left: 1rem solid $blue;
+    }
+    .unassigned {
+      border-left: 1rem solid $purple;
+    }
+    .message {
+      border-left: 1rem solid $green;
+    }
+
+    .checked {
+      opacity: 0.4;
+    }
+  }
+}

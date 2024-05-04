@@ -1,0 +1,78 @@
+name: CD-backend
+
+on:
+  push:
+    branches:
+      - development
+    paths:
+      - 'backend/**'
+      - 'shared/**'
+      - 'aws-cdk/backend/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    environment: AWS
+    env:
+      AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
+      POSTGRE_DATABASE_HOST: ${{ secrets.POSTGRE_DATABASE_HOST }}
+      POSTGRE_DATABASE_PORT: ${{ secrets.POSTGRE_DATABASE_PORT }}
+      POSTGRE_DATABASE_USER_NAME: ${{ secrets.POSTGRE_DATABASE_USER_NAME }}
+      POSTGRE_DATABASE_PASSWORD: ${{ secrets.POSTGRE_DATABASE_PASSWORD }}
+      POSTGRE_DATABASE_NAME: ${{ secrets.POSTGRE_DATABASE_NAME }}
+      BASTION_HOST: ${{ secrets.BASTION_HOST }}
+      BASTION_USER: ${{ secrets.BASTION_USER }}
+      BASTION_SSH_KEY: ${{ secrets.BASTION_SSH_KEY }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Use Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: |
+          cd aws-cdk && npm ci
+          cd backend/layer && npm ci
+          cd ../../../backend && npm ci
+
+      - name: Build Nest.js app
+        run: |
+          cd backend && npm run build
+
+      - name: Migration
+        run: |
+          mkdir ~/.ssh
+          ssh-keyscan -H $BASTION_HOST >> ~/.ssh/known_hosts
+          eval `ssh-agent -s`
+          ssh-add - <<< "$BASTION_SSH_KEY"
+          ssh -fN -v -L $POSTGRE_DATABASE_PORT:$POSTGRES_DATABASE_HOST:$POSTGRE_DATABASE_PORT $BASTION_USER@$BASTION_HOST
+          cd backend && npm run db:migration
+
+      - name: Install AWS CLI
+        run: |
+          curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+          unzip awscliv2.zip
+          sudo ./aws/install --update
+
+      - name: Configure AWS credentials
+        run: |
+          aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
+          aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+          aws configure set region $AWS_DEFAULT_REGION
+
+      - name: Deploy with CDK
+        run: |
+          npm install -g aws-cdk@2.130.0
+          cd aws-cdk && npm run deploy:backend
+
+      - name: Clean up
+        run: |
+          npm prune --production

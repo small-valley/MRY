@@ -1,0 +1,16 @@
+{
+  "name": "aws-cdk-backend",
+  "version": "1.0.0",
+  "scripts": {
+    "deploy:backend": "cd backend && cdk deploy --require-approval never",
+    "deploy:frontend": "cd frontend && cdk deploy --require-approval never"
+  },
+  "dependencies": {
+    "aws-cdk-lib": "^2.134.0",
+    "dotenv": "^16.4.5"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.30",
+    "ts-node": "^10.9.2"
+  }
+}

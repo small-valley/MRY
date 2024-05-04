@@ -1,0 +1,27 @@
+@import "/app/globals.scss";
+
+.header {
+  position: fixed;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 65px;
+  width: 82%;
+  box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+  padding: 0rem 5rem 0rem 2rem;
+  background-color: white;
+}
+
+@media (max-width: 1000px) {
+  .header {
+    margin-left: 110px;
+    width: 615px;
+    padding: 0rem 2rem 0rem 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .header {
+    display: none;
+  }
+}

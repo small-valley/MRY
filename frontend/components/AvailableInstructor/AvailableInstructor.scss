@@ -1,0 +1,48 @@
+@import '/app/globals.scss';
+
+.instructor {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  &_wrap {
+    display: grid;
+    grid-template-columns: 18% 70%;
+    align-items: center;
+    gap: 1rem;
+  }
+  &_list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    li {
+      position: relative;
+
+      img {
+        border-radius: 50%;
+      }
+      div {
+        display: none;
+        position: absolute;
+        top: 150%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 100;
+        border-radius: 5px;
+        font-size: 0.8rem;
+        background-color: white;
+        color: $gray;
+        padding: 0.5rem 1rem;
+      }
+    }
+    li:hover {
+      div {
+        display: block;
+      }
+    }
+    .selected {
+      img {
+        outline: 2px solid $primary-color;
+      }
+    }
+  }
+}
