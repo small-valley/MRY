@@ -2,7 +2,7 @@ import { changeDate } from '@/app/actions/common';
 
 import { toggleEditSchedule } from '@/type/cohorts';
 import { Check, X } from 'lucide-react';
-import { Dispatch, SetStateAction, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 
 import Calendar from 'react-calendar';
 import { PutScheduleCourseRequest } from '../../../shared/models/requests/putScheduleRequest';
@@ -10,6 +10,7 @@ import { Course } from '../../../shared/models/responses/getCohortResponse';
 
 import { updateSchedule } from '@/app/actions/cohorts';
 import useDays from '@/app/hooks/programs/useDays';
+import useSchoolBreak from '@/app/hooks/schoolbreak/useSchoolBreak';
 type Props = {
   course: Course;
   toggleEditSchedule: toggleEditSchedule;
@@ -20,15 +21,22 @@ type day = {
   id: string;
   name: string;
 };
-
+const BTN_BASE_CLASS = 'cohort_btn';
 const BASE_CLASS = 'cohort_table_content';
 export default function CourseRowEdit({ course, toggleEditSchedule, setChange }: Props) {
+  const { breaks, fetchBreaks } = useSchoolBreak();
   const { days, fetchDays } = useDays();
   const [startDate, setStartdate] = useState<Date>(course.startDate || null);
   const [endDate, setEnddate] = useState<Date>(course.endDate || null);
   const [day, setDayId] = useState<day>({ id: course.dayId, name: course.days } || '');
   const [isCalandar, setIsCalandar] = useState<boolean>(false);
   const [isDay, setIsDays] = useState<boolean>(false);
+  const [isToast, setIsToast] = useState<boolean>(false);
+  const [toast, setToast] = useState<string>('');
+
+  useEffect(() => {
+    fetchBreaks();
+  }, []);
 
   const handleDateChange = (event: any) => {
     setIsCalandar(false);
@@ -38,14 +46,28 @@ export default function CourseRowEdit({ course, toggleEditSchedule, setChange }:
 
   const tileDisabled = ({ date, view }: any) => {
     if (view === 'month') {
-      return (
-        date.getDay() === 2 || // Tuesday
-        date.getDay() === 3 || // Wednesday
-        date.getDay() === 4 || // Thursday
-        date.getDay() === 6 || // Saturday
-        date.getDay() === 0 // Sunday
-      );
+      const dayOfWeek = date.getDay();
+      if (
+        dayOfWeek === 2 || // Tuesday
+        dayOfWeek === 3 || // Wednesday
+        dayOfWeek === 4 || // Thursday
+        dayOfWeek === 6 || // Saturday
+        dayOfWeek === 0 // Sunday
+      ) {
+        return true;
+      }
+      if (breaks) {
+        for (const tmp of breaks) {
+          const startDate = new Date(`${tmp.startDate}T00:00:00-07:00`);
+          const endDate = new Date(`${tmp.endDate}T00:00:00-07:00`);
+          startDate.setDate(startDate.getDate() - 1);
+          if (date >= startDate && date <= endDate) {
+            return true; // Disable dates within school breaks
+          }
+        }
+      }
     }
+
     return false;
   };
 
@@ -65,7 +87,13 @@ export default function CourseRowEdit({ course, toggleEditSchedule, setChange }:
           setChange(Math.random());
         }
       } catch (error: any) {
-        console.log('fail update');
+        console.log(error);
+        setToast('aaa');
+        setIsToast(true);
+        setTimeout(() => {
+          setToast('');
+          setIsToast(false);
+        }, 5000);
       }
     }
     toggleEditSchedule(course.scheduleId);
@@ -98,7 +126,7 @@ export default function CourseRowEdit({ course, toggleEditSchedule, setChange }:
         <button type="button" className="save" onClick={handleUpdateSchedule}>
           <Check size={20} />
         </button>
-        <button className="del">
+        <button type="button" className="del">
           <X size={20} onClick={() => toggleEditSchedule(course.scheduleId)} />
         </button>
       </div>
@@ -111,7 +139,7 @@ export default function CourseRowEdit({ course, toggleEditSchedule, setChange }:
             selectRange={true}
             tileDisabled={tileDisabled}
           />
-          <button className="close" onClick={() => setIsCalandar(false)}>
+          <button type="button" className="close" onClick={() => setIsCalandar(false)}>
             Close
           </button>
         </div>
@@ -141,6 +169,9 @@ export default function CourseRowEdit({ course, toggleEditSchedule, setChange }:
             Close
           </button>
         </div>
+      </div>
+      <div className={`toast_init_popup ${isToast ? 'toast' : ''}`}>
+        <div className="toast_wrap">{toast}</div>
       </div>
     </>
   );

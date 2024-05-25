@@ -42,15 +42,21 @@ export class CourseRepository implements ICourseRepository {
     await repository.delete({ programId: programId });
   }
 
-  async isExistsCourseName(name: string): Promise<boolean> {
-    return await this.courseRepository.exists({
-      where: { name, isDeleted: false },
-    });
+  async isExistsCourseName(name: string, programId?: string, courseId?: string): Promise<boolean> {
+    return await this.courseRepository
+      .createQueryBuilder("course")
+      .where("course.name = :name", { name })
+      .andWhere(programId ? "course.program_id = :programId" : "1=1", { programId })
+      .andWhere(courseId ? `course.program_id IN(SELECT program_id FROM courses WHERE id = :courseId)` : "1=1", {
+        courseId,
+      })
+      .andWhere(courseId ? `course.id <> :courseId` : "1=1", { courseId })
+      .getExists();
   }
 
-  async isExistsCourseId(id: string): Promise<boolean> {
+  async isExistsCourseId(courseId: string): Promise<boolean> {
     return await this.courseRepository.exists({
-      where: { id, isDeleted: false },
+      where: { id: courseId, isDeleted: false },
     });
   }
 

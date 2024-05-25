@@ -1,9 +1,8 @@
-import { HttpAdapterHost, NestFactory } from "@nestjs/core";
+import { NestFactory } from "@nestjs/core";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { config } from "dotenv";
 import "reflect-metadata";
-import { AppModule } from "./app.module";
-import { AllExceptionsFilter } from "./filter/exception.filter";
+import { AppModule } from "./app/app.module";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -11,14 +10,22 @@ async function bootstrap() {
   // Enable CORS
   app.enableCors({ origin: /^http:\/\/localhost:\d+$/ });
 
-  // Set global exception filter
-  app.useGlobalFilters(new AllExceptionsFilter(app.get(HttpAdapterHost)));
-
   // Swagger configuration
   const swaggerConfig = new DocumentBuilder()
     .setTitle("MRY API")
     .setDescription("The API description")
     .setVersion("1.0")
+    .addBearerAuth(
+      {
+        type: "http",
+        scheme: "bearer",
+        bearerFormat: "JWT",
+        name: "JWT",
+        description: "Enter JWT access token gotten from POST:/auth/signin api",
+        in: "header",
+      },
+      "JWT"
+    )
     .build();
   const document = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup("swagger", app, document);

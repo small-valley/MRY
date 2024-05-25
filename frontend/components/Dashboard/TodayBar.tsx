@@ -1,89 +1,17 @@
-import { Search } from 'lucide-react';
 import React from 'react';
+import { Today } from '../../../shared/models/responses/getDashboardResponse';
 
 const BASE_CLASS = 'home_todaybar';
 
-type today = {
-  cohortId: string;
-  cohortName: string;
-  courseName: string;
-  period: string;
-  room: string;
-  instructor: string;
+type Props = {
+  todayBar: Today[];
 };
-const tmp: today[] = [
-  {
-    cohortId: 'aaa',
-    cohortName: 'E1-0124',
-    courseName: 'Analytics',
-    period: 'Evening',
-    room: 'Facebook',
-    instructor: 'Mriam',
-  },
-  {
-    cohortId: 'bbb',
-    cohortName: 'E2-0124',
-    courseName: 'Advanced Strategies',
-    room: 'Facebook',
-    instructor: 'Mriam',
-    period: 'Evening',
-  },
-  {
-    cohortId: 'ccc',
-    cohortName: 'E2-0124',
-    courseName: 'E-commerce',
-    room: 'Facebook',
-    instructor: 'Mriam',
-    period: 'Afternoon',
-  },
-  {
-    cohortId: 'ddd',
-    cohortName: 'A1-0124',
-    room: 'Facebook',
-    instructor: 'Mriam',
-    period: 'Morning',
-    courseName: 'Program Project',
-  },
-  {
-    cohortId: 'eee',
-    cohortName: 'E3-0124',
-    room: 'Facebook',
-    instructor: 'Mriam',
-    period: 'Afternoon',
-    courseName: 'Analytics',
-  },
-  {
-    cohortId: 'ccc',
-    cohortName: 'E2-0124',
-    courseName: 'E-commerce',
-    room: 'Facebook',
-    instructor: 'Mriam',
-    period: 'Afternoon',
-  },
-  {
-    cohortId: 'ddd',
-    cohortName: 'A1-0124',
-    room: 'Facebook',
-    instructor: 'Mriam',
-    period: 'Morning',
-    courseName: 'Program Project',
-  },
-  {
-    cohortId: 'eee',
-    cohortName: 'E3-0124',
-    room: 'Facebook',
-    instructor: 'Mriam',
-    period: 'Afternoon',
-    courseName: 'Analytics',
-  },
-];
 
-export default function TodayBar() {
+export default function TodayBar({ todayBar }: Props) {
   return (
     <div className={BASE_CLASS}>
       <h1> Today</h1>
-      <input type="text" placeholder="Search Course" />
-      {tmp.map((today, index) => (
+      {todayBar.map((today, index) => (
         <li key={`${index}-${today.cohortId}-${today.cohortName}`}>
           <div>
             <h3>{today.courseName}</h3>

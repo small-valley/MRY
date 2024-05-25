@@ -1,12 +1,4 @@
-@import "/app/globals.scss";
-
-button {
-  line-height: 0px;
-  color: var(--color-orange);
-  background: none;
-  border-radius: 5px;
-  border: none;
-}
+@import '/app/globals.scss';
 
 button:focus {
   outline: none;

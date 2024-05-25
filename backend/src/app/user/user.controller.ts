@@ -1,12 +1,16 @@
-import { Controller, Get, Param, Post, UploadedFile, UseInterceptors} from "@nestjs/common";
-import { ApiTags, ApiConsumes, ApiBody } from "@nestjs/swagger";
-import { AppController } from "src/app.controller";
-import { UserService } from "./user.service";
-import { S3Service } from "../s3/s3.service";
+import { Controller, Get, Param, Post, Req, UploadedFile, UseGuards, UseInterceptors } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiTags } from "@nestjs/swagger";
+import { AppController } from "src/app/app.controller";
+import { UserAuthGuard } from "src/auth/auth/guard/user.guard";
+import { BaseResponse } from "../../../../shared/models/responses/baseResponse";
+import { GetLoginUserResponse } from "../../../../shared/models/responses/getLoginUserResponse";
+import { S3Service } from "../s3/s3.service";
+import { UserService } from "./user.service";
 
 @Controller("users")
 @ApiTags("users")
+@ApiBearerAuth("JWT")
 export class UserController extends AppController {
   constructor(
     private readonly userService: UserService,
@@ -53,5 +57,12 @@ export class UserController extends AppController {
     await this.userService.updateUserAvatar(userId, avatarUrl);
 
     return this.ok({ avatarUrl });
+  }
+
+  @UseGuards(UserAuthGuard) // get userId from jwt token
+  @Get("login/user")
+  async getLoginUser(@Req() req): Promise<BaseResponse<GetLoginUserResponse>> {
+    const result = await this.userService.getLoginUser(req.user.userId);
+    return this.ok(result);
   }
 }

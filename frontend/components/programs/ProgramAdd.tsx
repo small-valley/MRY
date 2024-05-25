@@ -1,4 +1,4 @@
-import { Check } from 'lucide-react';
+import { Check, X } from 'lucide-react';
 import { useState } from 'react';
 //import shared model Fetch Type
 import { PostProgramRequest } from '../../../shared/models/requests/postProgramRequest';
@@ -8,6 +8,7 @@ import { createProgram } from '@/app/actions/programs';
 import { colors, setChange, setIsAdd } from '@/type/programs';
 
 const BASE_CLASS = 'program_content_wrap';
+const BTN_BASE_CLASS = 'program_btn';
 
 type Props = {
   setChange: setChange;
@@ -17,17 +18,24 @@ export default function ProgramAdd({ setChange, setIsAdd }: Props) {
   const [program, setProgram] = useState<string>('');
   const [course, setCourse] = useState<string>('');
   const [hour, setHour] = useState<number>(0);
+  const [message, setMessage] = useState<string>('');
 
   const handleCreateProgram = async (formData: any) => {
     const newProgram: PostProgramRequest = {
       name: program,
       courses: [{ name: course, hour: hour, color: formData.get('color') }],
     };
-
-    const success = await createProgram(newProgram);
-    if (success) {
-      setIsAdd(false);
-      setChange(Math.random());
+    try {
+      const success = await createProgram(newProgram);
+      if (success) {
+        setIsAdd(false);
+        setChange(Math.random());
+      }
+    } catch (error: any) {
+      setMessage('The Program can not create');
+      setTimeout(() => {
+        setMessage('');
+      }, 4000);
     }
   };
   return (
@@ -81,9 +89,19 @@ export default function ProgramAdd({ setChange, setIsAdd }: Props) {
               </>
             ))}
           </select>
-          <button type="submit">
+          <button className={`${BTN_BASE_CLASS}_add`} type="submit">
             <Check size={15} />
           </button>
+          <button
+            className={`${BTN_BASE_CLASS}_del`}
+            type="button"
+            onClick={() => {
+              setIsAdd(false);
+            }}
+          >
+            <X size={15}></X>
+          </button>
+          <div className="message">{message}</div>
         </div>
       </form>
     </>

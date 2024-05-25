@@ -6,8 +6,9 @@ export class UserCapabilityDayService {
   @Inject("userCapabilityDayRepository")
   private readonly userCapabilityDayRepository: IUserCapabilityDayRepository;
 
-  async createUserCapabilityDay({ userId, dayId, isDraft }): Promise<void> {
-    await this.userCapabilityDayRepository.createUserCapabilityDay({ userId, dayId, isDraft });
+  async createUserCapabilityDay({ userId, dayId, isDraft }): Promise<{ userCapabilityDayId: string }> {
+    const response = await this.userCapabilityDayRepository.createUserCapabilityDay({ userId, dayId, isDraft });
+    return response;
   }
 
   async updateUserCapabilityDay(userCapabilityDayId: string): Promise<void> {

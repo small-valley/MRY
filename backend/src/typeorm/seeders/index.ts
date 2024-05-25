@@ -216,7 +216,9 @@ async function seedDatabase() {
 
           await Promise.all(
             cohort.schedules.map(async (schedule) => {
-              const course = await client.query(`SELECT id FROM courses WHERE name = '${schedule.course}';`);
+              const course = await client.query(
+                `SELECT c.id From courses c INNER JOIN programs p ON c.program_id = p.id WHERE p.name = '${cohort.program}' AND c.name = '${schedule.course}';`
+              );
               const courseId = course.rows[0].id;
 
               const user = await client.query(`SELECT id FROM users WHERE first_name = '${schedule.instructor}';`);
@@ -235,6 +237,11 @@ async function seedDatabase() {
               );
             })
           );
+
+          // delete room_id and day_id of break course
+          await client.query(
+            `UPDATE schedules SET room_id = null, day_id = null WHERE course_id IN (SELECT id FROM courses WHERE name = 'Break');`
+          );
         })
       );
 
@@ -245,7 +252,7 @@ async function seedDatabase() {
             `INSERT INTO preset_todos (title, description, created_by, updated_by) VALUES ('${todo.title}', '${todo.description}', '${createdBy}', '${updatedBy}');`
           );
           await client.query(
-            `INSERT INTO todos (schedule_id, title, description, due_date, is_completed, created_by, updated_by) SELECT id, '${todo.title}', '${todo.description}', now(), false, '${createdBy}', '${updatedBy}' FROM schedules;`
+            `INSERT INTO todos (schedule_id, title, description, due_date, is_completed, created_by, updated_by) SELECT id, '${todo.title}', '${todo.description}', start_date, false, '${createdBy}', '${updatedBy}' FROM schedules;`
           );
         })
       );
@@ -270,6 +277,13 @@ async function seedDatabase() {
               await client.query(
                 `INSERT INTO user_dayoffs (user_id, start_date, end_date, created_by, updated_by) VALUES ('${receiverId}', '${startDate}', '${endDate}', '${createdBy}', '${updatedBy}');`
               );
+              const userDayoff = await client.query(
+                `SELECT id FROM user_dayoffs WHERE user_id = '${receiverId}' AND start_date = '${startDate}' AND end_date = '${endDate}';`
+              );
+              const userDayoffId = userDayoff.rows[0].id;
+              await client.query(
+                `INSERT INTO notifications(sender_id, receiver_id, title, description, is_read, link_url, type, created_by, updated_by, user_dayoff_id) VALUES('${senderId}', '${receiverId}', '${notification.title}', '${description}', '${notification.isRead}', '${notification.linkUrl}', '${notification.type}', '${createdBy}', '${updatedBy}', '${userDayoffId}'); `
+              );
               break;
             case "course":
               const course = await client.query(`SELECT id FROM courses WHERE name = '${notification.courseName}';`);
@@ -278,17 +292,53 @@ async function seedDatabase() {
               await client.query(
                 `INSERT INTO user_capability_courses (user_id, course_id, created_by, updated_by) VALUES ('${receiverId}', '${courseId}', '${createdBy}', '${updatedBy}');`
               );
+              const userCapabilityCourse = await client.query(
+                `SELECT id FROM user_capability_courses WHERE user_id = '${receiverId}' AND course_id = '${courseId}';`
+              );
+              const userCapabilityCourseId = userCapabilityCourse.rows[0].id;
+              await client.query(
+                `INSERT INTO notifications(sender_id, receiver_id, title, description, is_read, link_url, type, created_by, updated_by, user_capability_course_id) VALUES('${senderId}', '${receiverId}', '${notification.title}', '${description}', '${notification.isRead}', '${notification.linkUrl}', '${notification.type}', '${createdBy}', '${updatedBy}', '${userCapabilityCourseId}'); `
+              );
+              break;
+            case "day":
+              const day = await client.query(`SELECT id FROM days WHERE name = '${notification.dayName}';`);
+              const dayId = day.rows[0].id;
+              description = "updates available days";
+              await client.query(
+                `INSERT INTO user_capability_days (user_id, day_id, created_by, updated_by) VALUES ('${receiverId}', '${dayId}', '${createdBy}', '${updatedBy}');`
+              );
+              const userCapabilityDay = await client.query(
+                `SELECT id FROM user_capability_days WHERE user_id = '${receiverId}' AND day_id = '${dayId}';`
+              );
+              const userCapabilityDayId = userCapabilityDay.rows[0].id;
+              await client.query(
+                `INSERT INTO notifications(sender_id, receiver_id, title, description, is_read, link_url, type, created_by, updated_by, user_capability_day_id) VALUES('${senderId}', '${receiverId}', '${notification.title}', '${description}', '${notification.isRead}', '${notification.linkUrl}', '${notification.type}', '${createdBy}', '${updatedBy}', '${userCapabilityDayId}'); `
+              );
+              break;
+            case "time":
+              const time = await client.query(`SELECT id FROM times WHERE name = '${notification.timeName}';`);
+              const timeId = time.rows[0].id;
+              description = "updates available times";
+              await client.query(
+                `INSERT INTO user_capability_times (user_id, time_id, created_by, updated_by) VALUES ('${receiverId}', '${timeId}', '${createdBy}', '${updatedBy}');`
+              );
+              const userCapabilityTime = await client.query(
+                `SELECT id FROM user_capability_times WHERE user_id = '${receiverId}' AND time_id = '${timeId}';`
+              );
+              const userCapabilityTimeId = userCapabilityTime.rows[0].id;
+              await client.query(
+                `INSERT INTO notifications(sender_id, receiver_id, title, description, is_read, link_url, type, created_by, updated_by, user_capability_time_id) VALUES('${senderId}', '${receiverId}', '${notification.title}', '${description}', '${notification.isRead}', '${notification.linkUrl}', '${notification.type}', '${createdBy}', '${updatedBy}', '${userCapabilityTimeId}'); `
+              );
               break;
             case "message":
               description = notification.description!;
+              await client.query(
+                `INSERT INTO notifications(sender_id, receiver_id, title, description, is_read, link_url, type, created_by, updated_by) VALUES('${senderId}', '${receiverId}', '${notification.title}', '${description}', '${notification.isRead}', '${notification.linkUrl}', '${notification.type}', '${createdBy}', '${updatedBy}'); `
+              );
               break;
             default:
-              description = "";
+              break;
           }
-
-          await client.query(
-            `INSERT INTO notifications(sender_id, receiver_id, title, description, is_read, link_url, type, created_by, updated_by) VALUES('${senderId}', '${receiverId}', '${notification.title}', '${description}', '${notification.isRead}', '${notification.linkUrl}', '${notification.type}', '${createdBy}', '${updatedBy}'); `
-          );
         })
       );
 

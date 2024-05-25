@@ -1,27 +1,27 @@
 import { InjectRepository } from "@nestjs/typeorm";
 import { IScheduleRepository } from "src/repository/interfaces/IScheduleRepository";
-import { GetOngoingAndUpcomingScheduleModel, InsertScheduleModel, ScheduleModel, UpdateScheduleModel } from "src/repository/models/schedule.model";
+import {
+  GetOngoingAndUpcomingScheduleModel,
+  InsertScheduleModel,
+  ScheduleModel,
+  UpdateScheduleModel,
+} from "src/repository/models/schedule.model";
 import { QueryRunner, Repository } from "typeorm";
+import { Course } from "../entities/course.entity";
 import { Schedule } from "../entities/schedule.entity";
 import { Todo } from "../entities/todo.entity";
-import { Course } from "../entities/course.entity";
 
 export class ScheduleRepository implements IScheduleRepository {
   constructor(
     @InjectRepository(Schedule)
     private scheduleRepository: Repository<Schedule>
-  ) { }
+  ) {}
 
   async getOngoingAndUpcomingSchedules(userId: string): Promise<GetOngoingAndUpcomingScheduleModel[]> {
     return await this.scheduleRepository
       .createQueryBuilder("schedule")
       .leftJoinAndMapOne("schedule.course", Course, "course", "schedule.courseId = course.id")
-      .leftJoinAndMapMany(
-        "schedule.todos",
-        Todo,
-        "todos",
-        "todos.scheduleId = schedule.id AND todos.isDeleted = false"
-      )
+      .leftJoinAndMapMany("schedule.todos", Todo, "todos", "todos.scheduleId = schedule.id AND todos.isDeleted = false")
       .where("schedule.isDeleted = false")
       .andWhere("schedule.userId = :userId", { userId })
       .andWhere("schedule.endDate >= NOW()")
@@ -132,8 +132,8 @@ export class ScheduleRepository implements IScheduleRepository {
     return this.scheduleRepository.createQueryBuilder("s").select("s.cohort_id").where(`s.id = '${scheduleId}'`);
   }
 
-  async insertSchedule(schedule: InsertScheduleModel, queryRunner?: QueryRunner) {
-    await this.getRepository(queryRunner).insert({
+  async insertSchedule(schedule: InsertScheduleModel, queryRunner?: QueryRunner): Promise<string> {
+    const result = await this.getRepository(queryRunner).insert({
       cohortId: schedule.cohortId,
       startDate: schedule.startDate,
       endDate: schedule.endDate,
@@ -142,6 +142,7 @@ export class ScheduleRepository implements IScheduleRepository {
       userId: schedule.instructorId,
       roomId: schedule.roomId,
     });
+    return result.identifiers[0].id as string;
   }
 
   async updateScheduleCourse(schedule: UpdateScheduleModel, queryRunner?: QueryRunner) {
@@ -156,6 +157,10 @@ export class ScheduleRepository implements IScheduleRepository {
         roomId: schedule.roomId,
       }
     );
+  }
+
+  async deleteSchedule(scheduleId: string, queryRunner?: QueryRunner) {
+    await this.getRepository(queryRunner).delete({ id: scheduleId });
   }
 
   getRepository(queryRunner?: QueryRunner) {

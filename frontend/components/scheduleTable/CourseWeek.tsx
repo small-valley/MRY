@@ -1,4 +1,4 @@
-import { Schedule } from "../../../shared/models/responses/getCohortsResponse";
+import { Schedule } from '../../../shared/models/responses/getCohortsResponse';
 
 type Props = {
   schedules: Schedule[];
@@ -11,7 +11,7 @@ export default function CourseWeek({ schedules, name, room }: Props) {
     <>
       {schedules.length === 5 ? (
         <>
-          {schedules[0].days[0]?.includes("Monday") ? (
+          {schedules[0].days[0]?.includes('Monday') ? (
             <div className={`courseFull ${schedules[0].course.color}`}>
               {schedules[0].course.name} - {name} / {room}
             </div>
@@ -22,7 +22,7 @@ export default function CourseWeek({ schedules, name, room }: Props) {
       ) : (
         <div className="courseHalf">
           {schedules.map((schedule, index) =>
-            schedule.days[0]?.includes("Monday") ? (
+            schedule.days[0]?.includes('Monday') ? (
               <div key={index} className={`half ${schedule.course.color}`}>
                 {schedule.course.name} - {name} / {room}
               </div>

@@ -4,6 +4,7 @@ import { GetNotificationRequest } from "../../../../shared/models/requests/getNo
 import { PostNotificationRequest } from "../../../../shared/models/requests/postNotificationRequest";
 import { INotificationRepository } from "src/repository/interfaces/INotificationRepository";
 import { GetNotificationBySenderRequest } from "../../../../shared/models/requests/getNotificationBySenderRequest";
+import { PostNotificationResponse } from "../../../../shared/models/responses/postNotificationResponse";
 
 @Injectable()
 export class NotificationService {
@@ -20,8 +21,9 @@ export class NotificationService {
     return response;
   }
 
-  async createNotification({ title, description, senderId, receiverId, type }: PostNotificationRequest): Promise<void> {
-    await this.notificationRepository.createNotification({ title, description, senderId, receiverId, type });
+  async createNotification({ title, description, senderId, receiverId, type, userCapabilityDayId, userCapabilityTimeId, userCapabilityCourseId, userDayoffId, forDelete}: PostNotificationRequest): Promise<PostNotificationResponse> {
+    const response = await this.notificationRepository.createNotification({ title, description, senderId, receiverId, type, userCapabilityDayId, userCapabilityTimeId, userCapabilityCourseId, userDayoffId, forDelete});
+    return response;
   }
 
   async updateNotification({ notificationId, isApproved }: { notificationId: string, isApproved: boolean }): Promise<void> {

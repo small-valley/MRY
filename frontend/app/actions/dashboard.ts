@@ -1,5 +1,5 @@
 import { GetDashboardResponse } from '../../../shared/models/responses/getDashboardResponse';
-import { getAccessToken } from './common';
+// import { getAccessToken } from './common';
 
 export const getDashboard = async (): Promise<GetDashboardResponse> => {
   try {
@@ -23,4 +23,11 @@ export const getDashboard = async (): Promise<GetDashboardResponse> => {
     console.error(error);
     throw new Error(`An error occurred: ${error.message}`);
   }
+};
+
+const getAccessToken = () => {
+  return document.cookie
+    .split('; ')
+    .find((row) => row.startsWith('access_token='))
+    ?.split('=')[1];
 };

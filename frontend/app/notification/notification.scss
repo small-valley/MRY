@@ -56,11 +56,15 @@
             border: 1px solid $primary-color;
             background-color: transparent;
             color: $primary-color;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
           }
           .disapprove {
             border: 1px solid $red;
             background-color: transparent;
             color: $red;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
           }
           .approve:hover {
             color: $secondary-color;
@@ -83,7 +87,7 @@
     .unassigned {
       border-left: 1rem solid $purple;
     }
-    .message {
+    .notimessage {
       border-left: 1rem solid $green;
     }
 

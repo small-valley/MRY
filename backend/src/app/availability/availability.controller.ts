@@ -1,12 +1,13 @@
 import { Controller, Get, Param } from "@nestjs/common";
-import { ApiTags } from "@nestjs/swagger";
-import { AppController } from "src/app.controller";
+import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
+import { AppController } from "src/app/app.controller";
 import { GetAvailabilityResponse } from "../../../../shared/models/responses/getAvailabilityResponse";
 import { TodoService } from "../todo/todo.service";
 import { AvailabilityService } from "./availability.service";
 
 @Controller("availability")
 @ApiTags("availability")
+@ApiBearerAuth("JWT")
 export class AvailabilityController extends AppController {
   constructor(
     private readonly availabilityService: AvailabilityService,

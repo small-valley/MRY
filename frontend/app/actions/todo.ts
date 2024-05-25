@@ -1,13 +1,15 @@
 import { PostTodoRequest } from '../../../shared/models/requests/postTodoRequest';
 import { PutTodoRequest } from '../../../shared/models/requests/putTodoRequest';
+import { getAccessToken } from './common';
 
 export const updateTodo = async (todo: PutTodoRequest) => {
   try {
-    const baseUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/todos/${todo.todoId}`;
+    const baseUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL_B}/todos/${todo.todoId}`;
 
     const response = await fetch(baseUrl, {
       method: '{PUT}',
       headers: {
+        Authorization: `Bearer ${getAccessToken()}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(todo),
@@ -27,11 +29,12 @@ export const updateTodo = async (todo: PutTodoRequest) => {
 
 export const addTodo = async (todo: PostTodoRequest) => {
   try {
-    const baseUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/todos/${todo.scheduleId}`;
+    const baseUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL_B}/todos/${todo.scheduleId}`;
 
     const response = await fetch(baseUrl, {
       method: '{POST}',
       headers: {
+        Authorization: `Bearer ${getAccessToken()}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(todo),

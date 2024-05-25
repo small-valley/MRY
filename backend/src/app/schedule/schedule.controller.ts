@@ -1,12 +1,13 @@
 import { Body, Controller, Delete, Get, Param, Post, Put, Query } from "@nestjs/common";
-import { ApiBody, ApiQuery, ApiTags } from "@nestjs/swagger";
-import { AppController } from "src/app.controller";
+import { ApiBearerAuth, ApiBody, ApiQuery, ApiTags } from "@nestjs/swagger";
+import { AppController } from "src/app/app.controller";
 import { PostScheduleDto } from "./dto/postSchedule.dto";
 import { PutScheduleCourseDto, PutScheduleInstructorOrRoomDto } from "./dto/putSchedule.dto";
 import { ScheduleService } from "./schedule.service";
 
 @Controller("schedules")
 @ApiTags("schedules")
+@ApiBearerAuth("JWT")
 export class ScheduleController extends AppController {
   constructor(private readonly scheduleService: ScheduleService) {
     super();
@@ -14,9 +15,7 @@ export class ScheduleController extends AppController {
 
   @Get("ongoing-and-upcoming")
   @ApiQuery({ name: "userId", required: true })
-  async getOngoingAndUpcomingSchedules(
-    @Query("userId") userId: string
-  ) {
+  async getOngoingAndUpcomingSchedules(@Query("userId") userId: string) {
     const schedules = await this.scheduleService.getOngoingAndUpcomingSchedules(userId);
     return this.ok(schedules);
   }

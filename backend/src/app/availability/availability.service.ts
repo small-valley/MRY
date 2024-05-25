@@ -34,7 +34,9 @@ export class AvailabilityService {
   }
 
   async getAvailableRooms(scheduleId: string): Promise<AvailableRooms[]> {
-    return await this.availabilityRepository.getAvailableRooms(scheduleId);
+    return (await this.availabilityRepository.getAvailableRooms(scheduleId)).sort((a, b) => {
+      return a.name < b.name ? -1 : a.name > a.name ? 1 : 0;
+    });
   }
 
   extractUnavailableInstructors(instructors: AvailableInstructorModel[]): Instructor[] {

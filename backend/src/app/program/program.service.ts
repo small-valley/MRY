@@ -1,6 +1,7 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { BadRequestError } from "src/error/badRequest.error";
 import { NotFoundError } from "src/error/notFound.error";
+import { BREAK } from "src/repository/consts/course.const";
 import { IProgramRepository } from "src/repository/interfaces/IProgramRepository";
 import { IRepositoryService } from "src/repository/interfaces/IRepositoryService";
 import { PostCourseRequest, PostProgramRequest } from "../../../../shared/models/requests/postProgramRequest";
@@ -18,17 +19,26 @@ export class ProgramService {
   private readonly courseService: CourseService;
 
   async findAll(): Promise<GetProgramResponse[]> {
-    return this.programRepository.getPrograms();
+    const programs = await this.programRepository.getPrograms();
+    // exclude Break course -> filter in frontend
+    const excludeBreak = programs.map((program) => {
+      // const courses = program.courses.filter((course) => {
+      //   return course.name !== BREAK;
+      // });
+      return { id: program.id, name: program.name, courses: program.courses };
+    });
+    return excludeBreak;
   }
 
   async create(request: PostProgramRequest) {
+    this.checkBreakCourse(request.courses.map((course) => course.name));
     await this.checkDuplicateProgramName(request.name);
     await this.programRepository.createProgramAndCourses(request);
   }
 
   async createCourses(request: PostCourseRequest) {
     await this.isExistsProgramId(request.id);
-    await this.courseService.checkDuplicateCourseName(request.courses.name);
+    await this.courseService.checkDuplicateCourseName(request.courses.name, request.id, null);
     await this.courseService.createCourse(request);
   }
 
@@ -84,6 +94,12 @@ export class ProgramService {
     );
     if (!isBelongingToTheSameProgram) {
       throw new BadRequestError(`Course id: ${courseId} does not belong to the program with id: ${programId}.`);
+    }
+  }
+
+  private checkBreakCourse(courseName: string[]) {
+    if (courseName.includes(BREAK)) {
+      throw new BadRequestError("Course name cannot be 'Break'");
     }
   }
 }

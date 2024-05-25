@@ -2,12 +2,14 @@ import { Plus } from 'lucide-react';
 import { Course, GetCohortResponse } from '../../../shared/models/responses/getCohortResponse';
 
 import { Dispatch, SetStateAction, useState } from 'react';
-import CourseRowEdit from './CourseRowEdit';
-import CourseRowShow from './CourseRowShow';
 import CohortRowAssign from './CohortRowAssign';
 import CourseRowDelete from './CourseRowDelete';
+import CourseRowEdit from './CourseRowEdit';
+import CourseRowNew from './CourseRowNew';
+import CourseRowShow from './CourseRowShow';
 
 const BASE_CLASS = 'cohort';
+const BTN_BASE_CLASS = 'cohort_btn';
 
 type Props = {
   cohort: GetCohortResponse;
@@ -21,7 +23,9 @@ export default function CohortTable({ cohort, isEdit, setChange }: Props) {
   const [deleteScheduleId, setDeleteScheduleId] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
   const [isScheduleEdit, setIsScheduleEdit] = useState(false);
+  const [isNewSchedule, setIsNewSchedule] = useState(false);
 
+  console.log(cohort);
   const toggleSelectedSchedule = (course: Course) => {
     if (course.status == 'upcoming' || course.status == 'ongoing') {
       if (assignScheduleId === '' || assignScheduleId != course.scheduleId) {
@@ -44,9 +48,18 @@ export default function CohortTable({ cohort, isEdit, setChange }: Props) {
     if (isDeleting) {
       setIsDeleting(false);
       setDeleteScheduleId('');
+      setChange(Math.random());
     } else {
       setIsDeleting(true);
       setDeleteScheduleId(id);
+    }
+  };
+  const toggleNewSchedule = () => {
+    if (isNewSchedule) {
+      setIsNewSchedule(false);
+      setChange(Math.random());
+    } else {
+      setIsNewSchedule(true);
     }
   };
 
@@ -64,8 +77,8 @@ export default function CohortTable({ cohort, isEdit, setChange }: Props) {
           </div>
           <div className={`${BASE_CLASS}_table_header_btn`}></div>
         </li>
-        {cohort.course.map((course, index) => (
-          <>
+        {cohort.course?.map((course, index) => (
+          <div key={course.courseId + index}>
             <li
               className={`${BASE_CLASS}_table_content`}
               key={`${course.name}-${course.scheduleId}-${index}`}
@@ -129,21 +142,29 @@ export default function CohortTable({ cohort, isEdit, setChange }: Props) {
                 <CohortRowAssign course={course} setChange={setChange} /> <div className={`${BASE_CLASS}_btn`}></div>
               </>
             )}
-          </>
+          </div>
         ))}
 
-        {isEdit ? (
-          <li className={`${BASE_CLASS}_table_content`}>
-            <div className={`${BASE_CLASS}_table_content_add`}>
-              <button>
-                <Plus size={15} />
-              </button>
-            </div>
-            <div className={`${BASE_CLASS}_table_content_btn`}></div>
-          </li>
-        ) : (
-          <></>
-        )}
+        {isEdit &&
+          (isNewSchedule ? (
+            <li className={`${BASE_CLASS}_table_content`}>
+              <CourseRowNew
+                programId={cohort.programId}
+                cohortId={cohort.cohortId}
+                toggleNewSchedule={toggleNewSchedule}
+                setChange={setChange}
+              />
+            </li>
+          ) : (
+            <li className={`${BASE_CLASS}_table_content`}>
+              <div className={`${BASE_CLASS}_table_content_add`}>
+                <button type="button" className={`${BTN_BASE_CLASS}_save`} onClick={toggleNewSchedule}>
+                  <Plus size={15} />
+                </button>
+              </div>
+              <div className={`${BASE_CLASS}_table_content_btn`}></div>
+            </li>
+          ))}
       </ul>
     </>
   );

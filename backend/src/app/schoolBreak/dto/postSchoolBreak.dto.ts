@@ -5,7 +5,7 @@ export class PostSchoolBreakDto implements PostSchoolBreakRequest {
   @ApiProperty()
   name: string;
   @ApiProperty()
-  startDate: Date;
+  startDate: string;
   @ApiProperty()
-  endDate: Date;
+  endDate: string;
 }

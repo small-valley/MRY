@@ -1,5 +1,6 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { IUserRepository } from "src/repository/interfaces/IUserRepository";
+import { OneUserModel } from "src/repository/models/user.model";
 import { GetInstructorResponse } from "../../../../shared/models/responses/getInstructorResponse";
 import { UpdateUserAvatarResponse } from "../../../../shared/models/responses/updateUserAvatarResponse";
 
@@ -33,5 +34,16 @@ export class UserService {
   async updateUserAvatar(userId: string, avatarUrl: string): Promise<UpdateUserAvatarResponse> {
     const response = await this.userRepository.updateUserAvatar(userId, avatarUrl);
     return response;
+  }
+
+  async getLoginUser(userId: string): Promise<Omit<OneUserModel, "accessToken">> {
+    const user = await this.userRepository.getUserById(userId);
+    return {
+      userId: user.userId,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      avatarUrl: user.avatarUrl,
+      role: user.role,
+    };
   }
 }

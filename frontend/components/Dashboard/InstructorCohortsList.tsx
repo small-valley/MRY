@@ -1,118 +1,22 @@
-import { changeDate } from '@/app/actions/common';
-import { Todo } from '@/type/course';
+import { changeDate, putApiData } from '@/app/actions/common';
 import { CalendarCheck2 } from 'lucide-react';
 import { useState } from 'react';
+import { PutTodoRequest } from '../../../shared/models/requests/putTodoRequest';
+import { Ongoing, Todo, Upcoming } from '../../../shared/models/responses/getDashboardResponse';
 
 const BASE_CLASS = 'home_instructorDashboard_cohorts';
-type ongoing = {
-  cohortId: string;
-  cohortName: string;
-  courseName: string;
-  period: string;
-  startDate: Date;
-  endDate: Date;
-  days: string;
-  todos: Todo[];
-};
-const tmp: ongoing[] = [
-  {
-    cohortId: 'aaa',
-    cohortName: 'E1-0124',
-    courseName: 'Analytics',
-    period: 'Evening',
-    startDate: new Date('2024-03-15'),
-    endDate: new Date('2024-05-15'),
-    days: 'Monday - Friday',
-    todos: [
-      {
-        id: 'todo1',
-        title: 'Google Room',
-        dueDate: '2024-01-01',
-        isCompleted: false,
-      },
-      {
-        id: 'todo2',
-        title: 'Invite',
-        dueDate: '2024-01-01',
-        isCompleted: true,
-      },
-    ],
-  },
-  {
-    cohortId: 'ccc',
-    cohortName: 'E2-0124',
-    courseName: 'E-commerce',
-    period: 'Afternoon',
-    startDate: new Date('2024-03-15'),
-    endDate: new Date('2024-05-15'),
-    days: 'Monday - Friday',
-    todos: [
-      {
-        id: 'todo1',
-        title: 'Google Room',
-        dueDate: '2024-01-01',
-        isCompleted: false,
-      },
-      {
-        id: 'todo2',
-        title: 'Invite',
-        dueDate: '2024-01-01',
-        isCompleted: true,
-      },
-    ],
-  },
-];
-const tmp2: ongoing[] = [
-  {
-    cohortId: '12345',
-    cohortName: 'E1-0124',
-    courseName: 'Analytics',
-    period: 'Evening',
-    startDate: new Date('2024-03-15'),
-    endDate: new Date('2024-05-15'),
-    days: 'Monday - Friday',
-    todos: [
-      {
-        id: 'todo1',
-        title: 'Google Room',
-        dueDate: '2024-01-01',
-        isCompleted: false,
-      },
-      {
-        id: '12345',
-        title: 'Invite',
-        dueDate: '2024-01-01',
-        isCompleted: true,
-      },
-    ],
-  },
-  {
-    cohortId: '324',
-    cohortName: 'E2-0124',
-    courseName: 'E-commerce',
-    period: 'Afternoon',
-    startDate: new Date('2024-03-15'),
-    endDate: new Date('2024-05-15'),
-    days: 'Monday - Friday',
-    todos: [
-      {
-        id: 'todo1',
-        title: 'Google Room',
-        dueDate: '2024-01-01',
-        isCompleted: false,
-      },
-      {
-        id: 'todo2',
-        title: 'Invite',
-        dueDate: '2024-01-01',
-        isCompleted: true,
-      },
-    ],
-  },
-];
 
-export default function InstructorCohortsList() {
+export default function InstructorCohortsList({
+  ongoing,
+  upcoming,
+  setChange,
+}: {
+  ongoing: Ongoing[];
+  upcoming: Upcoming[];
+  setChange: (random: number) => void;
+}) {
   const [selectedId, setSelectedId] = useState<string>('');
+
   const toggleSelectedId = (id: string) => {
     if (selectedId === id) {
       setSelectedId('');
@@ -120,39 +24,55 @@ export default function InstructorCohortsList() {
       setSelectedId(id);
     }
   };
+
+  const handleUpdateTodo = async (todo: Todo) => {
+    const response = await putApiData<PutTodoRequest, null>(`${process.env.NEXT_PUBLIC_API_BASE_URL_B}/todos`, {
+      todoId: todo.id,
+      dueDate: todo.dueDate,
+      isCompleted: !todo.isCompleted,
+      title: todo.title,
+      description: todo.description,
+    });
+    setChange(Math.random());
+  };
+
   return (
     <div className={BASE_CLASS}>
-      <h2>Ongoing</h2>
+      <h2 className={`${BASE_CLASS}_ongoing`}>Ongoing</h2>
       <ul>
-        {tmp.map((ongoing, index) => (
+        {ongoing.map((ongoing, index) => (
           <div
             className={`${BASE_CLASS}_list ${ongoing.period}`}
             key={`${index}-${ongoing.cohortId}-${ongoing.cohortName}`}
           >
-            <li onClick={() => toggleSelectedId(ongoing.cohortId)}>
+            <li onClick={() => toggleSelectedId(ongoing.scheduleId)}>
               <h4>{ongoing.cohortName}</h4>
               <p>{ongoing.courseName}</p>
               <span>
                 {changeDate(ongoing.startDate)} - {changeDate(ongoing.endDate)}
               </span>
               <div>
-                {ongoing.days} / {ongoing.period}
+                {ongoing.day} / {ongoing.period}
               </div>
             </li>
-            {selectedId === ongoing.cohortId && (
+            {selectedId === ongoing.scheduleId && (
               <div className={`${BASE_CLASS}_todo`}>
                 {ongoing.todos.map((todo, index) => (
                   <div key={`${index}-${todo.id}-${todo.title}`} id={todo.id} className={`${BASE_CLASS}_todo_wrap`}>
                     <div className={`${BASE_CLASS}_todo_wrap_item`}>
                       <CalendarCheck2 size={20} />
-                      <p>{todo.dueDate}</p>
+                      <p>{changeDate(todo.dueDate)}</p>
                     </div>
                     <div className={`${BASE_CLASS}_todo_wrap_item`}>
                       <label>{todo.title}</label>
                       {todo.isCompleted ? (
-                        <button className="complete">Complete</button>
+                        <button className="complete" onClick={() => handleUpdateTodo(todo)}>
+                          Complete
+                        </button>
                       ) : (
-                        <button className="ongoing">On Going</button>
+                        <button className="ongoing" onClick={() => handleUpdateTodo(todo)}>
+                          On Going
+                        </button>
                       )}
                     </div>
                   </div>
@@ -162,37 +82,41 @@ export default function InstructorCohortsList() {
           </div>
         ))}
       </ul>
-      <h2>Upcoming</h2>
+      <h2 className={`${BASE_CLASS}_upcoming`}>Upcoming</h2>
       <ul>
-        {tmp2.map((ongoing, index) => (
+        {upcoming.map((upcoming, index) => (
           <div
-            className={`${BASE_CLASS}_list ${ongoing.period}`}
-            key={`${index}-${ongoing.cohortId}-${ongoing.cohortName}`}
+            className={`${BASE_CLASS}_list ${upcoming.period}`}
+            key={`${index}-${upcoming.cohortId}-${upcoming.cohortName}`}
           >
-            <li onClick={() => toggleSelectedId(ongoing.cohortId)}>
-              <h4>{ongoing.cohortName}</h4>
-              <p>{ongoing.courseName}</p>
+            <li onClick={() => toggleSelectedId(upcoming.scheduleId)}>
+              <h4>{upcoming.cohortName}</h4>
+              <p>{upcoming.courseName}</p>
               <span>
-                {changeDate(ongoing.startDate)} - {changeDate(ongoing.endDate)}
+                {changeDate(upcoming.startDate)} - {changeDate(upcoming.endDate)}
               </span>
               <div>
-                {ongoing.days} / {ongoing.period}
+                {upcoming.day} / {upcoming.period}
               </div>
             </li>
-            {selectedId === ongoing.cohortId && (
+            {selectedId === upcoming.scheduleId && (
               <div className={`${BASE_CLASS}_todo`}>
-                {ongoing.todos.map((todo, index) => (
+                {upcoming.todos.map((todo, index) => (
                   <div key={`${index}-${todo.id}-${todo.title}`} id={todo.id} className={`${BASE_CLASS}_todo_wrap`}>
                     <div className={`${BASE_CLASS}_todo_wrap_item`}>
                       <CalendarCheck2 size={20} />
-                      <p>{todo.dueDate}</p>
+                      <p>{changeDate(todo.dueDate)}</p>
                     </div>
                     <div className={`${BASE_CLASS}_todo_wrap_item`}>
                       <label>{todo.title}</label>
                       {todo.isCompleted ? (
-                        <button className="complete">Complete</button>
+                        <button className="complete" onClick={() => handleUpdateTodo(todo)}>
+                          Complete
+                        </button>
                       ) : (
-                        <button className="ongoing">On Going</button>
+                        <button className="ongoing" onClick={() => handleUpdateTodo(todo)}>
+                          On Going
+                        </button>
                       )}
                     </div>
                   </div>

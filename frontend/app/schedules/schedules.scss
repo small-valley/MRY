@@ -1,4 +1,4 @@
-@import "../globals.scss";
+@import '../globals.scss';
 
 .schedule {
   color: $gray;
@@ -10,14 +10,10 @@
     padding: 0.5rem 1rem;
     &_filter {
       &_btn {
+        padding: 1rem;
         display: flex;
         gap: 0.5rem;
-        button {
-          padding: 1rem 1rem;
-        }
-        button:hover {
-          padding: 1rem 1rem;
-        }
+        justify-content: center;
       }
     }
   }
@@ -33,7 +29,7 @@
       text-align: center;
       gap: 0.2rem;
       div {
-        width: 12%;
+        width: 10%;
         font-size: 1.2rem;
         border: 1px solid $light-gray;
         border-radius: 10px;
@@ -41,14 +37,18 @@
       }
       div:nth-child(1) {
         border: none;
+        width: 5%;
       }
     }
     &_weekcontent {
       display: flex;
       text-align: center;
       gap: 0.2rem;
+      div:nth-child(1) {
+        width: 5%;
+      }
       div {
-        width: 12%;
+        width: 10%;
         border: 1px solid $light-gray;
         border-radius: 10px;
         padding: 1rem 0;
@@ -61,7 +61,7 @@
           width: 500%;
           padding: 0.2rem 0;
           margin-left: 0.5rem;
-          z-index: 1000;
+          z-index: 2;
         }
         .courseFull:hover {
           cursor: pointer;
@@ -172,19 +172,28 @@
       text-align: center;
       gap: 0.2rem;
       div {
-        width: 13%;
+        width: 12%;
         font-size: 1.2rem;
         border: 1px solid $light-gray;
         border-radius: 10px;
         padding: 2rem 0;
+      }
+      div:nth-child(1) {
+        width: 8%;
+        border: none;
       }
     }
     &_monthcontent {
       display: flex;
       text-align: center;
       gap: 0.2rem;
+      div:nth-child(1) {
+        width: 8%;
+        display: flex;
+        justify-content: center;
+      }
       div {
-        width: 13%;
+        width: 12%;
         border: 1px solid $light-gray;
         border-radius: 10px;
         padding: 0.5rem 0;
@@ -197,7 +206,7 @@
           width: 500%;
           padding: 0.2rem 0;
           margin-left: 0.5rem;
-          z-index: 1000;
+          z-index: 100;
         }
         .courseFull:hover {
           cursor: pointer;
@@ -218,35 +227,35 @@
             padding: 0.2rem 0;
             z-index: 1000;
           }
-          .morning {
+          .Morning {
             background-color: $light-blue;
             color: $blue;
           }
-          .afternoon {
+          .Afternoon {
             background-color: $light-orange;
             color: $red;
           }
-          .evening {
+          .Evening {
             background-color: $light-gray;
             color: $gray;
           }
-          .weekend {
+          .Weekend {
             background-color: $light-pink;
             color: $red;
           }
-          .morning:hover {
+          .Morning:hover {
             background-color: $blue;
             color: $light-blue;
           }
-          .afternoon:hover {
+          .Afternoon:hover {
             background-color: $red;
             color: $light-orange;
           }
-          .evening:hover {
+          .Evening:hover {
             background-color: $gray;
             color: $light-gray;
           }
-          .weekend:hover {
+          .Weekend:hover {
             background-color: $red;
             color: $light-pink;
           }
@@ -258,37 +267,55 @@
           padding: 0.2rem 0;
           z-index: 1000;
         }
-        .morning {
+        .Morning {
           background-color: $light-blue;
           color: $blue;
         }
-        .afternoon {
+        .Afternoon {
           background-color: $light-orange;
           color: $red;
         }
-        .evening {
+        .Evening {
           background-color: $light-gray;
           color: $gray;
         }
-        .weekend {
+        .Weekend {
           background-color: $light-pink;
           color: $red;
         }
-        .morning:hover {
+        .Morning:hover {
           background-color: $blue;
           color: $light-blue;
         }
-        .afternoon:hover {
+        .Afternoon:hover {
           background-color: $red;
           color: $light-orange;
         }
-        .evening:hover {
+        .Evening:hover {
           background-color: $gray;
           color: $light-gray;
         }
-        .weekend:hover {
+        .Weekend:hover {
           background-color: $red;
           color: $light-pink;
+        }
+      }
+    }
+    &_listfilter {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      align-items: center;
+      &_first {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+        padding: 1rem;
+        &_btn {
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+          background-color: transparent;
         }
       }
     }
@@ -319,34 +346,6 @@
         padding: 0.5rem;
         width: 12%;
       }
-      .morning {
-        background-color: $light-blue;
-        border: solid 1px rgba($blue, 0.2);
-        color: $blue;
-        padding: 0.3rem 0;
-        border-radius: 5px;
-      }
-      .afternoon {
-        background-color: $light-orange;
-        border: solid 1px rgba($red, 0.2);
-        color: $red;
-        padding: 0.3rem 0;
-        border-radius: 5px;
-      }
-      .evening {
-        background-color: $light-gray;
-        border: solid 1px rgba($gray, 0.2);
-        color: $gray;
-        padding: 0.3rem 0;
-        border-radius: 5px;
-      }
-      .weekend {
-        background-color: $light-pink;
-        border: solid 1px rgba($red, 0.2);
-        color: $red;
-        padding: 0.3rem 0;
-        border-radius: 5px;
-      }
     }
     .finished {
       background-color: $finished;
@@ -376,5 +375,67 @@
     li:hover {
       cursor: pointer;
     }
+  }
+}
+
+.init_calendarlist {
+  display: none;
+}
+.calender_list {
+  display: block;
+
+  &_wrap {
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: white;
+    border-radius: 10px;
+    width: fit-content;
+    height: auto;
+    border: 2px solid $primary-color;
+    gap: 1rem;
+    h2 {
+      margin-top: 1rem;
+      color: $primary-color;
+    }
+    .close {
+      border-radius: 10px;
+      margin-bottom: 1rem;
+      padding: 1rem;
+      background-color: $secondary-color;
+    }
+    .close:hover {
+      background-color: $primary-color;
+      color: white;
+    }
+    &_btn {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+  }
+}
+
+.schedule_btn {
+  &_list {
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    background-color: $primary-color;
+    color: white;
+  }
+  &_list:hover {
+    background-color: $secondary-color;
+    color: $primary-color;
+  }
+  &_trans {
+    padding: 0.5rem;
+    border-radius: 5px;
+    background-color: transparent;
+    color: $primary-color;
+  }
+  &_trans:hover {
+    background-color: $secondary-color;
+    color: $primary-color;
   }
 }

@@ -1,19 +1,18 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Query } from "@nestjs/common";
-import { AppController } from "src/app.controller";
+import { Body, Controller, Delete, Get, Param, Post, Put } from "@nestjs/common";
+import { ApiBearerAuth, ApiBody, ApiQuery, ApiTags } from "@nestjs/swagger";
+import { AppController } from "src/app/app.controller";
 import { UserDayoffService } from "./userDayoff.service";
-import { ApiBody, ApiQuery, ApiTags } from "@nestjs/swagger";
 
 @Controller("userDayoffs")
 @ApiTags("userDayoffs")
+@ApiBearerAuth("JWT")
 export class UserDayoffController extends AppController {
   constructor(private readonly userDayoffService: UserDayoffService) {
     super();
   }
 
   @Get("/:userId")
-  async getUserDayoff(
-    @Param("userId") userId: string,
-  ) {
+  async getUserDayoff(@Param("userId") userId: string) {
     const result = await this.userDayoffService.getUserDayoff(userId);
     return this.ok(result);
   }
@@ -25,7 +24,8 @@ export class UserDayoffController extends AppController {
   @ApiQuery({ name: "isDraft", required: false })
   @ApiBody({ type: String })
   async createUserDayoff(
-    @Body() { userId, startDate, endDate, isDraft }: { userId: string, startDate: Date, endDate: Date, isDraft?: boolean },
+    @Body()
+    { userId, startDate, endDate, isDraft }: { userId: string; startDate: Date; endDate: Date; isDraft?: boolean }
   ) {
     const result = await this.userDayoffService.createUserDayoff({ userId, startDate, endDate, isDraft });
     return this.ok(result);

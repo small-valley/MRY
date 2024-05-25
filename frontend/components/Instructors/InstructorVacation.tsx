@@ -1,15 +1,16 @@
 import { changeDate } from '@/app/actions/common';
-import { Plus } from 'lucide-react';
 import { usePathname } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Calendar from 'react-calendar';
 import './InstructorDetail.scss';
 import { PostNotificationRequest } from '../../../shared/models/requests/postNotificationRequest';
-import { createNotification, getNotificationBySender } from '@/app/actions/notifications';
+import { createNotification } from '@/app/actions/notifications';
 import { PostUserDayoffRequest } from '../../../shared/models/requests/postUserDayoffRequest';
 import { createVacation, getVacation } from '@/app/actions/instructors';
 import { GetUserDayoffsResponse } from '../../../shared/models/responses/getUserDayoffsResponse';
 import { PostUserDayoffsResponse } from '../../../shared/models/responses/postUserDayoffResponse';
+import useManagerId from '@/app/hooks/instructors/useManagerId';
+import { useCurrentUserContext } from '@/app/contexts/CurrentUserContext';
 
 const BASE_CLASS = 'vacationcard_content';
 type Props = {
@@ -25,30 +26,34 @@ export default function InstructorVacation({ id }: Props) {
   const [isSubmit, setIsSubmit] = useState<boolean>(false);
   const [vacationList, setVacationList] = useState<GetUserDayoffsResponse[]>([]);
   const [newDayOffId, setNewDayOffId] = useState<PostUserDayoffsResponse>();
+  const { receiverId } = useManagerId();
+  const { currentUser } = useCurrentUserContext();
+  const isManager = currentUser?.role === 'manager';
 
   const handleDateChange = (event: any) => {
-    console.log(event);
     setIsOpen(false);
     setStartdate(event[0]);
     setEnddate(event[1]);
     setIsSubmit(true);
   };
 
-  const fetchVacation = async (id: string) => {
+  const fetchVacation = useCallback(async (id: string) => {
     try {
       const vacation = await getVacation(id);
       setVacationList(vacation);
     } catch (error) {
       console.error('Error fetching data:', error);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchVacation(id);
   }, [id]);
 
   useEffect(() => {
-    handleCreateNotificaiotn(id);
+    if (!isManager) {
+      handleCreateNotificaiotn(id);
+    }
     setIsSubmit(false);
 
     setTimeout(() => {
@@ -57,34 +62,36 @@ export default function InstructorVacation({ id }: Props) {
   }, [newDayOffId]);
 
   const handleAddVacation = async (id: string) => {
-    //userId will change as current user
     const newVacation: PostUserDayoffRequest = {
       userId: id,
       startDate: startDate,
       endDate: endDate,
+      isDraft: isManager ? false : true,
     };
     try {
       const vacationId = await createVacation(newVacation);
       setNewDayOffId(vacationId);
     } catch (error: any) {
       console.log(error);
+    } finally {
+      if (isManager) {
+        fetchVacation(id);
+      }
     }
   };
 
   const handleCreateNotificaiotn = async (id: string) => {
-    if (!newDayOffId) return;
+    if (!newDayOffId || !receiverId) return;
     const newNoti: PostNotificationRequest = {
       senderId: id,
       title: 'Confirm Vacation',
       type: 'vacation',
-      receiverId: 'f1d89aaa-b7b2-4f05-b32f-1f30345e0bd9',
+      receiverId: receiverId,
       userDayoffId: newDayOffId.userDayoffId,
     };
 
-    console.log(id, newNoti);
     try {
       const success = await createNotification(newNoti);
-      console.log();
       if (success) {
         fetchVacation(id);
         setMessage('The Vacation will be added after approve from manager');
@@ -104,12 +111,13 @@ export default function InstructorVacation({ id }: Props) {
             <label>
               {changeDate(vacation.startDate)} to {changeDate(vacation.endDate)}
             </label>
-            <div className={vacation.isDraft ? 'Approve' : 'Wait'}>{vacation.isDraft ? 'Approve' : 'Wait'}</div>
+            <div className={vacation.isDraft ? 'Wait' : 'Approved'}>{vacation.isDraft ? 'Wait' : 'Approved'}</div>
           </li>
         ))}
 
-        {currentRouter === '/profile/' && (
+        {currentRouter.includes('/profile') && (
           <button
+            className="instructors_btn_finishedit"
             type="button"
             onClick={() => {
               setIsOpen(true);
@@ -138,6 +146,7 @@ export default function InstructorVacation({ id }: Props) {
           </div>
           <div className="submit_btn">
             <button
+              className="instructors_btn_finishedit"
               onClick={() => {
                 handleAddVacation(id);
               }}
@@ -145,6 +154,7 @@ export default function InstructorVacation({ id }: Props) {
               Send
             </button>
             <button
+              className="instructors_btn_finishedit"
               onClick={() => {
                 setIsSubmit(false);
               }}

@@ -135,7 +135,7 @@
     z-index: 100;
     border: 2px solid $primary-color;
     width: 40vw;
-    height: 40vh;
+    height: fit-content;
     border-radius: 10px;
     background-color: white;
     padding: 1rem;
@@ -143,28 +143,65 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap: 2rem;
+    gap: 1rem;
     animation: fadeIn 0.5s ease-in;
     &_content {
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 2rem;
+      padding: 1rem;
+      .content-btn {
+        padding: 0.5rem 1rem;
+        border: 1px solid $primary-color;
+        border-radius: 10px;
+        color: $primary-color;
+        background-color: transparent;
+      }
+      .content-btn:hover {
+        background-color: $secondary-color;
+        color: $primary-color;
+      }
       &_btn {
         display: flex;
         gap: 1rem;
         flex-wrap: wrap;
-        .content-btn {
-          padding: 1rem 1.5rem;
+
+        .program-btn {
+          padding: 0.5rem 1rem;
           border: 1px solid $primary-color;
           border-radius: 10px;
           color: $primary-color;
           background-color: transparent;
         }
-        .content-btn:hover {
+        .program-btn:hover {
+          background-color: $secondary-color;
+          color: $primary-color;
+        }
+        .program-selected {
+          padding: 0.5rem 1rem;
+          border-radius: 10px;
+          color: $primary-color;
+          background-color: $secondary-color;
           border: 1px solid $primary-color;
-          background-color: $primary-color;
-          color: white;
+        }
+        .period-btn {
+          padding: 0.5rem 1rem;
+          border: 1px solid $red;
+          border-radius: 10px;
+          color: $red;
+          background-color: transparent;
+        }
+        .period-btn:hover {
+          background-color: $delete;
+          color: $red;
+        }
+        .period-selected {
+          padding: 0.5rem 1rem;
+          border-radius: 10px;
+          color: $red;
+          background-color: $delete;
+          border: 1px solid $red;
         }
       }
     }
@@ -173,7 +210,7 @@
       gap: 0.5rem;
       .popup_btn {
         border-radius: 10px;
-        padding: 1rem;
+        padding: 0.5rem 1rem;
         background-color: $secondary-color;
         color: $primary-color;
       }
@@ -192,10 +229,8 @@
 @keyframes fadeIn {
   0% {
     opacity: 0;
-    height: 20vh;
   }
   100% {
     opacity: 1;
-    height: 40vh;
   }
 }

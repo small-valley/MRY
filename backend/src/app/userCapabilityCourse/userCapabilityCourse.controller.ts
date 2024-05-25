@@ -1,10 +1,11 @@
 import { Body, Controller, Delete, Param, Post, Put } from "@nestjs/common";
-import { AppController } from "src/app.controller";
+import { ApiBearerAuth, ApiBody, ApiQuery, ApiTags } from "@nestjs/swagger";
+import { AppController } from "src/app/app.controller";
 import { UserCapabilityCourseService } from "./userCapabilityCourse.service";
-import { ApiBody, ApiQuery, ApiTags } from "@nestjs/swagger";
 
 @Controller("userCapabilityCourses")
 @ApiTags("userCapabilityCourses")
+@ApiBearerAuth("JWT")
 export class UserCapabilityCourseController extends AppController {
   constructor(private readonly userCapabilityCourseService: UserCapabilityCourseService) {
     super();
@@ -17,10 +18,21 @@ export class UserCapabilityCourseController extends AppController {
   @ApiQuery({ name: "isDraft", required: false })
   @ApiBody({ type: String })
   async createUserCapabilityCourse(
-    @Body() { userId, courseId, isPreference, isDraft }: { userId: string, courseId: string, isPreference?: boolean, isDraft?: boolean },
+    @Body()
+    {
+      userId,
+      courseId,
+      isPreference,
+      isDraft,
+    }: {
+      userId: string;
+      courseId: string;
+      isPreference?: boolean;
+      isDraft?: boolean;
+    }
   ) {
-    await this.userCapabilityCourseService.createUserCapabilityCourse({ userId, courseId, isPreference, isDraft });
-    return this.created();
+    const response = await this.userCapabilityCourseService.createUserCapabilityCourse({ userId, courseId, isPreference, isDraft });
+    return this.ok(response);
   }
 
   @Put("/:userCapabilityCourseId")

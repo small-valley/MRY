@@ -30,9 +30,18 @@ const dayDiff = (startDate: string, endDate: string) => {
   return days;
 }
 
+const lessThanExpectedEndDate = (startDate: string, endDate: string) => {
+  let endDateWeek = Number(createFormattedWeekFromStr(startDate).split("Week")[1]);
+  endDateWeek = endDateWeek + Math.floor(dayDiff(startDate, endDate) / 7)
+  endDateWeek = endDateWeek > 4 ? endDateWeek - 5 : endDateWeek;
+  const expectedEndDateWeek = Math.ceil(new Date(endDate).getDate() / 7);
+  return endDateWeek < expectedEndDateWeek;
+}
+
 const weekDiff = (startDate: string, endDate: string) => {
-  const difference = dayDiff(startDate, endDate);
-  return Math.ceil(difference / 7);
+  const days = dayDiff(startDate, endDate);
+  const numWeeks = Math.ceil(days / 7);
+  return lessThanExpectedEndDate(startDate, endDate) ? numWeeks + 1 : numWeeks;
 }
 
 const getWeeksInMonth = (year: number, month: number) => {

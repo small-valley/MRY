@@ -6,6 +6,7 @@ export interface DashboardModel {
   period: string;
   day: string;
   startDate: Date;
+  endDate: Date;
   todos: Todo[];
   room: string;
   instructor: string;

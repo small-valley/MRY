@@ -10,7 +10,7 @@ export class DashboardRepository implements IDashboardRepository {
     private cohortRepository: Repository<Cohort>
   ) {}
 
-  async getDashboard(): Promise<DashboardModel[]> {
+  async getDashboard(userId?: string): Promise<DashboardModel[]> {
     const cohorts = (await this.cohortRepository
       .createQueryBuilder("cohort")
       .innerJoin("times", "time", "cohort.time_id = time.id AND time.is_deleted = false")
@@ -21,6 +21,8 @@ export class DashboardRepository implements IDashboardRepository {
       .leftJoin("rooms", "room", "schedule.room_id = room.id AND room.is_deleted = false")
       .leftJoin("users", "user", "schedule.user_id = user.id AND user.is_deleted = false")
       .where("NOW() <= schedule.end_date")
+      // if userId is not provided, return all cohorts for manager role user
+      .andWhere(userId ? "schedule.user_id = :userId" : "1=1", { userId })
       .select([
         "cohort.id",
         "cohort.name",
@@ -29,6 +31,7 @@ export class DashboardRepository implements IDashboardRepository {
         "day.name",
         "schedule.id",
         "schedule.start_date",
+        "schedule.end_date",
         "user.first_name",
         "room.name",
         "todo.id",
@@ -39,6 +42,7 @@ export class DashboardRepository implements IDashboardRepository {
       ])
       .orderBy("schedule.start_date", "DESC")
       .addOrderBy("cohort.name", "DESC")
+      .addOrderBy("todo.title", "ASC")
       .getRawMany()) as CohortResult[];
 
     return this.convertToDashboardModel(cohorts);
@@ -79,6 +83,7 @@ export class DashboardRepository implements IDashboardRepository {
           day: cohort.day_name,
           room: cohort.room_name,
           startDate: cohort.start_date,
+          endDate: cohort.end_date,
           instructor: cohort.first_name,
           todos: todo.id ? [todo] : [],
         });
@@ -99,6 +104,7 @@ interface CohortResult {
   time_name: string;
   day_name: string;
   start_date: Date;
+  end_date: Date;
   schedule_id: string;
   first_name: string;
   room_name: string;

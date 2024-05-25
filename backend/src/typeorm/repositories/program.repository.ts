@@ -17,9 +17,7 @@ export class ProgramRepository implements IProgramRepository {
       .createQueryBuilder("program")
       .innerJoin("program.courses", "course", "program.id = course.program_id")
       .select(["program.id", "program.name", "course.id", "course.name", "course.color", "course.hour"])
-      // exclude Break course
-      .where(`course.name <> '${BREAK}'`)
-      .andWhere("program.is_deleted = false")
+      .where("program.is_deleted = false")
       .andWhere("course.is_deleted = false")
       .orderBy("program.name", "ASC")
       .addOrderBy("course.name", "ASC")

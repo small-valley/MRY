@@ -1,3 +1,4 @@
+import { getAccessToken } from '@/app/actions/common';
 import { useState } from 'react';
 import { GetNotificationResponse } from '../../../shared/models/responses/getNotificationResponse';
 
@@ -27,31 +28,81 @@ export default function NotificationRow({ noti, revalidateNoti }: Props) {
   const onApprove =
     ({ notificationId, type }: OnApproveInterface) =>
     async () => {
-      const options = {
+      const putOptions = {
         method: 'PUT',
         headers: {
+          Authorization: `Bearer ${getAccessToken()}`,
+          'Content-Type': 'application/json',
+        },
+      };
+      const deleteOptions = {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${getAccessToken()}`,
           'Content-Type': 'application/json',
         },
       };
       try {
-        await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/notifications/${notificationId}?isApproved=true`, options);
-        if (type === 'vacation') {
-          await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/userDayoffs/${noti.userDayoffId}`, options);
-        } else if (type === 'day') {
-          await fetch(
-            `${process.env.NEXT_PUBLIC_API_BASE_URL}/userCapabilityDays/${noti.userCapabilityDayId}`,
-            options
-          );
-        } else if (type === 'time') {
-          await fetch(
-            `${process.env.NEXT_PUBLIC_API_BASE_URL}/userCapabilityTimes/${noti.userCapabilityTimeId}`,
-            options
-          );
-        } else if (type === 'course') {
-          await fetch(
-            `${process.env.NEXT_PUBLIC_API_BASE_URL}/userCapabilityCourses/${noti.userCapabilityCourseId}`,
-            options
-          );
+        await fetch(
+          `${process.env.NEXT_PUBLIC_API_BASE_URL_B}/notifications/${notificationId}?isApproved=true`,
+          putOptions
+        );
+        if (noti.forDelete) {
+          switch (type) {
+            case 'vacation':
+              await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL_C}/userDayoffs/${noti.userDayoffId}`, deleteOptions);
+              break;
+            case 'day':
+              await fetch(
+                `${process.env.NEXT_PUBLIC_API_BASE_URL_C}/userCapabilityDays/${noti.userCapabilityDayId}`,
+                deleteOptions
+              );
+              break;
+            case 'time':
+              await fetch(
+                `${process.env.NEXT_PUBLIC_API_BASE_URL_C}/userCapabilityTimes/${noti.userCapabilityTimeId}`,
+                deleteOptions
+              );
+              break;
+            case 'course':
+              await fetch(
+                `${process.env.NEXT_PUBLIC_API_BASE_URL_C}/userCapabilityCourses/${noti.userCapabilityCourseId}`,
+                deleteOptions
+              );
+              break;
+            case 'message':
+              break;
+            default:
+              break;
+          }
+        } else {
+          switch (type) {
+            case 'vacation':
+              await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL_C}/userDayoffs/${noti.userDayoffId}`, putOptions);
+              break;
+            case 'day':
+              await fetch(
+                `${process.env.NEXT_PUBLIC_API_BASE_URL_C}/userCapabilityDays/${noti.userCapabilityDayId}`,
+                putOptions
+              );
+              break;
+            case 'time':
+              await fetch(
+                `${process.env.NEXT_PUBLIC_API_BASE_URL_C}/userCapabilityTimes/${noti.userCapabilityTimeId}`,
+                putOptions
+              );
+              break;
+            case 'course':
+              await fetch(
+                `${process.env.NEXT_PUBLIC_API_BASE_URL_C}/userCapabilityCourses/${noti.userCapabilityCourseId}`,
+                putOptions
+              );
+              break;
+            case 'message':
+              break;
+            default:
+              break;
+          }
         }
       } catch (error) {
         console.error('Error:', error);
@@ -65,11 +116,15 @@ export default function NotificationRow({ noti, revalidateNoti }: Props) {
     const options = {
       method: 'PUT',
       headers: {
+        Authorization: `Bearer ${getAccessToken()}`,
         'Content-Type': 'application/json',
       },
     };
     try {
-      await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/notifications/${notificationId}?isApproved=false`, options);
+      await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL_B}/notifications/${notificationId}?isApproved=false`,
+        options
+      );
     } catch (error) {
       console.error('Error:', error);
     } finally {
@@ -201,7 +256,7 @@ export default function NotificationRow({ noti, revalidateNoti }: Props) {
         </div>
       )}
       {noti.type === 'message' && (
-        <div className={`${BASE_CLASS}_row message ${noti.isRead ? 'checked' : ''}`}>
+        <div className={`${BASE_CLASS}_row notimessage ${noti.isRead ? 'checked' : ''}`}>
           <div className={`${BASE_CLASS}_row_title`}>
             <p> {noti.title}</p>
             <p> Requester : {noti.sender?.firstName}</p>

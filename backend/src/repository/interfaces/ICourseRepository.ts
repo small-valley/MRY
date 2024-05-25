@@ -8,6 +8,6 @@ export interface ICourseRepository {
   deleteCourse(id: string): Promise<void>;
   deleteCourseByProgramId(programId: string, queryRunner?: QueryRunner): Promise<void>;
   isExistsCourseId(id: string): Promise<boolean>;
-  isExistsCourseName(name: string): Promise<boolean>;
+  isExistsCourseName(name: string, programId?: string, courseId?: string): Promise<boolean>;
   getCourse(courseId: string): Promise<CourseModel | null>;
 }

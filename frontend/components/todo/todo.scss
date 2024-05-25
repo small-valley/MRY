@@ -9,12 +9,6 @@
     display: flex;
     align-items: center;
     gap: 1rem;
-    button {
-      padding: 0.3rem 0.4rem;
-    }
-    button:hover {
-      padding: 0.3rem 0.4rem;
-    }
   }
   &_wrap {
     display: flex;
@@ -26,27 +20,25 @@
       grid-template-columns: 40% 50%;
       gap: 1rem;
       align-items: center;
-      div:nth-child(2) {
+      &_detail {
         display: flex;
         flex-direction: column;
         gap: 0.5rem;
         align-items: center;
-      }
-      button {
-        padding: 0.2rem 1rem;
-        border-radius: 5px;
-        border: none;
-      }
-      button:hover {
-        padding: 0.2rem 1rem;
-        border-radius: 5px;
-        border: none;
+        &_form {
+          display: flex;
+          gap: 0.5rem;
+        }
       }
       .complete {
+        padding: 0.3rem 1rem;
+        border-radius: 5px;
         color: $gray;
         background-color: $finished;
       }
       .ongoing {
+        padding: 0.3rem 1rem;
+        border-radius: 5px;
         color: $green;
         border-radius: 5px;
 
@@ -62,5 +54,67 @@
         color: white;
       }
     }
+  }
+}
+
+.todocalender_popup {
+  display: none;
+}
+.todocalender_popup_selected {
+  display: block;
+  position: fixed;
+  width: 100%;
+  top: 30%;
+  left: 55%;
+  &_wrap {
+    overflow: hidden;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: white;
+    border-radius: 10px;
+    width: fit-content;
+    height: auto;
+    border: 2px solid $primary-color;
+    gap: 1rem;
+    h2 {
+      margin-top: 1rem;
+      color: $primary-color;
+    }
+    .close {
+      border-radius: 10px;
+      margin-bottom: 1rem;
+      padding: 0.5rem;
+      background-color: $secondary-color;
+    }
+    .close:hover {
+      background-color: $primary-color;
+      color: white;
+    }
+    &_btn {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+    &_form {
+      display: flex;
+      gap: 1rem;
+      align-items: last baseline;
+    }
+  }
+}
+
+.todo_btn {
+  &_add {
+    background-color: $secondary-color;
+    color: $primary-color;
+    padding: 0.4rem 0.7rem;
+    border-radius: 5px;
+  }
+  &_add:hover {
+    background-color: $primary-color;
+    color: white;
+    border: 1px solid $secondary-color;
   }
 }

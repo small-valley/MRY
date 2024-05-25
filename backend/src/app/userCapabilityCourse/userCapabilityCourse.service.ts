@@ -6,8 +6,9 @@ export class UserCapabilityCourseService {
   @Inject("userCapabilityCourseRepository")
   private readonly userCapabilityCourseRepository: IUserCapabilityCourseRepository;
 
-  async createUserCapabilityCourse({ userId, courseId, isPreference, isDraft }): Promise<void> {
-    await this.userCapabilityCourseRepository.createUserCapabilityCourse({ userId, courseId, isPreference, isDraft });
+  async createUserCapabilityCourse({ userId, courseId, isPreference, isDraft }): Promise<{ userCapabilityCourseId: string }> {
+    const response = await this.userCapabilityCourseRepository.createUserCapabilityCourse({ userId, courseId, isPreference, isDraft });
+    return response;
   }
 
   async updateUserCapabilityCourse(userCapabilityCourseId: string): Promise<void> {

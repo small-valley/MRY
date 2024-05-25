@@ -4,17 +4,34 @@
   display: none;
 }
 
-button {
-  padding: 0.5rem 1rem;
-  background-color: $primary-color;
-  color: white;
-  border-radius: 5px;
+.login_btn {
+  &_auth {
+    padding: 0.5rem 1rem;
+    background-color: $primary-color;
+    color: white;
+    border-radius: 5px;
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    justify-content: center;
+  }
+  &_auth:hover {
+    background-color: $secondary-color;
+    color: $primary-color;
+  }
+  &_signup {
+    border-radius: 5px;
+    padding: 1rem 2rem;
+    outline: 1px solid $primary-color;
+    background-color: transparent;
+  }
+  &_signup:hover {
+    padding: 1rem 2rem;
+    outline: 1px solid $primary-color;
+    background-color: $primary-color;
+    color: white;
+  }
 }
-button:hover {
-  background-color: $secondary-color;
-  color: $primary-color;
-}
-
 .toggle {
   display: block;
   display: grid;
@@ -35,17 +52,19 @@ button:hover {
       display: flex;
       align-items: center;
       gap: 1rem;
-      button {
-        display: flex;
-        gap: 1rem;
-        align-items: center;
-        justify-content: center;
-      }
     }
-    input {
+    &_input {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
       width: 50%;
-      text-align: left;
-      padding: 1rem;
+      input {
+        width: 100%;
+        text-align: left;
+        padding: 1rem;
+      }
     }
   }
   .toggleform {
@@ -57,17 +76,6 @@ button:hover {
     justify-content: center;
     gap: 2rem;
     color: white;
-    button {
-      padding: 1rem 2rem;
-      outline: 1px solid $primary-color;
-      background-color: transparent;
-    }
-    button:hover {
-      padding: 1rem 2rem;
-      outline: 1px solid $primary-color;
-      background-color: $primary-color;
-      color: white;
-    }
   }
   .toggle_right {
     background: linear-gradient(to right, $primary-color, $secondary-color);
@@ -89,6 +97,11 @@ button:hover {
 .right {
   white-space: nowrap;
   animation: LeftToRight 1.5s;
+}
+
+.message {
+  color: $red;
+  text-align: center;
 }
 
 @keyframes LeftToRight {

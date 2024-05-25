@@ -8,6 +8,7 @@ import useInstructorlist from '../hooks/instructors/useInstructorlist';
 import InstructorsList from '@/components/Instructors/InstructorsList';
 
 const BASE_CLASS = 'instructors';
+const BTN_BASE_CLASS = 'instructors_btn';
 
 export default function Instructors() {
   const [department, setDepartment] = useState('all');
@@ -31,21 +32,13 @@ export default function Instructors() {
       <div className={BASE_CLASS}>
         <div className={`${BASE_CLASS}_header`}>
           <div className={`${BASE_CLASS}_header_filter`}>
-            <div className={`${BASE_CLASS}_header_filter_selector`}>
-              <select className={`${BASE_CLASS}_header_filter_selector_department`}>
-                <option value="0" key="department">
-                  All Department
-                </option>
-                {Department.map((item, index) => (
-                  <option value={index + 1} key={index + 'department'}>
-                    {item}
-                  </option>
-                ))}
-              </select>
-            </div>
             <div className={`${BASE_CLASS}_header_filter_btn`}>
-              <button onClick={toggleCard}>Card</button>
-              <button onClick={toggleList}>List</button>
+              <button type="button" className={`${BTN_BASE_CLASS}_list`} onClick={toggleCard}>
+                Card
+              </button>
+              <button type="button" className={`${BTN_BASE_CLASS}_list`} onClick={toggleList}>
+                List
+              </button>
             </div>
           </div>
         </div>

@@ -34,17 +34,20 @@ export class User extends BaseColumns {
   @Column({ unique: true, length: 255 })
   email: string;
 
-  @Column({ length: 255 })
+  @Column({ length: 255, nullable: true })
   password: string;
 
-  @Column({ name: "avatar_url", length: 510 })
+  @Column({ name: "avatar_url", length: 510, nullable: true })
   avatarUrl: string;
 
-  @Column({ name: "contract_type_id" })
+  @Column({ name: "contract_type_id", nullable: true })
   contractTypeId: string;
 
   @Column({ name: "is_active", default: true })
   isActive: boolean;
+
+  @Column({ name: "access_token", nullable: true })
+  accessToken: string;
 
   @OneToMany(() => User, (user) => user.schedules)
   schedules: Schedule[];

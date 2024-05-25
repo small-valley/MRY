@@ -1,18 +1,22 @@
-import React from 'react';
-import Chart from './Chart';
 import OngoingList from './OngoingList';
 import UpcomingList from './UpcomingList';
+import SchoolBreak from '../SchoolBreak/SchoolBreak';
+import { GetDashboardResponse } from '../../../shared/models/responses/getDashboardResponse';
 
 const BASE_CLASS = 'home_dashboard';
 
-export default function Dashboard() {
+type Props = {
+  managerDashboard: GetDashboardResponse;
+};
+
+export default function Dashboard({ managerDashboard }: Props) {
   return (
     <div className={BASE_CLASS}>
-      <div>
-        <Chart />
-        <OngoingList />
+      <div className={`${BASE_CLASS}_top`}>
+        <OngoingList ongoing={managerDashboard.ongoing} />
+        <SchoolBreak />
       </div>
-      <UpcomingList />
+      <UpcomingList upcoming={managerDashboard.upcoming} />
     </div>
   );
 }

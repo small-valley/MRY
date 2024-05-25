@@ -10,12 +10,13 @@ export class UserCapabilityDayRepository implements IUserCapabilityDayRepository
     private userCapabilityDayRepository: Repository<UserCapabilityDay>,
   ) { }
 
-  async createUserCapabilityDay({ userId, dayId, isDraft }: PostUserCapabilityDayRequest): Promise<void> {
+  async createUserCapabilityDay({ userId, dayId, isDraft }: PostUserCapabilityDayRequest): Promise<{userCapabilityDayId: string}> {
     const userCapabilityDay = new UserCapabilityDay();
     userCapabilityDay.userId = userId;
     userCapabilityDay.dayId = dayId;
     userCapabilityDay.isDraft = isDraft || false;
     await this.userCapabilityDayRepository.save(userCapabilityDay);
+    return { userCapabilityDayId:  userCapabilityDay.id }
   }
 
   async updateUserCapabilityDay(userCapabilityDayId: string): Promise<void> {

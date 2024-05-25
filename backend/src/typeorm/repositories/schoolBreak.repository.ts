@@ -19,16 +19,20 @@ export class SchoolBreakRepository implements ISchoolBreakRepository {
       .orderBy("school_break.startDate", "ASC")
       .getMany();
 
-    return schoolBreaks;
+    return schoolBreaks.map((schoolBreak) => ({
+      id: schoolBreak.id,
+      name: schoolBreak.name,
+      startDate: schoolBreak.startDate,
+      endDate: schoolBreak.endDate,
+    }));
   }
 
   async createSchoolBreak(request: PostSchoolBreakRequest): Promise<PostSchoolBreakResponse> {
     const schoolBreak = new SchoolBreak();
     schoolBreak.name = request.name;
-    schoolBreak.startDate = request.startDate;
-    schoolBreak.endDate = request.endDate;
+    schoolBreak.startDate = new Date(request.startDate);
+    schoolBreak.endDate = new Date(request.endDate);
     await this.SchoolBreakRepository.save(schoolBreak);
-
     return {
       id: schoolBreak.id,
       name: schoolBreak.name,

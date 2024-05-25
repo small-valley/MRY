@@ -6,7 +6,8 @@ const BASE_CLASS = 'header';
 export default function Header() {
   return (
     <div className={BASE_CLASS}>
-      <NotificationHeader />
+      {/* <NotificationHeader /> */}
+      <div></div>
       <CurrentUser />
     </div>
   );

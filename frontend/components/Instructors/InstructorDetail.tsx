@@ -12,6 +12,9 @@ type Props = {
 
 export default function InstructorDetail({ instructor, setIsEdit }: Props) {
   const [programs, setPrograms] = useState<string[]>();
+  const instructorsCourses = instructor.courses.filter((item, pos) => {
+    return instructor.courses.map((course) => course.name).indexOf(item.name) === pos;
+  });
 
   useEffect(() => {
     if (instructor) {
@@ -89,14 +92,12 @@ export default function InstructorDetail({ instructor, setIsEdit }: Props) {
               <li className={`${BASE_CLASS}_course`} key={`${program}-${index}-${instructor.id}`}>
                 <div className={`${BASE_CLASS}_course_program_title`}>{program} Courses</div>
                 <div className={`${BASE_CLASS}_course_program_course`}>
-                  {instructor.courses.map((course, index) =>
+                  {instructorsCourses.map((course, index: number) =>
                     course.program.name === program ? (
                       <p className={course.color} key={`${index}-${course.color}-${course.program}`}>
                         {course.name}
                       </p>
-                    ) : (
-                      <></>
-                    )
+                    ) : null
                   )}
                 </div>
               </li>

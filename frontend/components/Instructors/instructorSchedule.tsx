@@ -1,11 +1,12 @@
-import { InstructorSchedules } from "@/app/testdata";
+import { InstructorSchedules } from '@/app/testdata';
+import { GetInstructorResponse } from '../../../shared/models/responses/getInstructorResponse';
 type Props = {
-  id: string;
+  instructor: GetInstructorResponse;
 };
 
-const BASE_CLASS = "instructors_content_schedule_class_table";
+const BASE_CLASS = 'instructors_content_schedule_class_table';
 
-export default function InstructorSchedule({ id }: Props) {
+export default function InstructorSchedule({ instructor }: Props) {
   return (
     <>
       <ul className={BASE_CLASS}>
@@ -16,10 +17,7 @@ export default function InstructorSchedule({ id }: Props) {
           <div>End</div>
         </li>
         {InstructorSchedules.map((schedule) => (
-          <li
-            className={`${BASE_CLASS}_content ${schedule.status}`}
-            key={schedule.name + schedule.cohort}
-          >
+          <li className={`${BASE_CLASS}_content ${schedule.status}`} key={schedule.name + schedule.cohort}>
             <div>{schedule.cohort}</div>
             <div>{schedule.name}</div>
             <div>{schedule.startDate}</div>

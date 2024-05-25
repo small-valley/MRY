@@ -1,10 +1,11 @@
 import { Body, Controller, Delete, Param, Post, Put } from "@nestjs/common";
-import { AppController } from "src/app.controller";
+import { ApiBearerAuth, ApiBody, ApiQuery, ApiTags } from "@nestjs/swagger";
+import { AppController } from "src/app/app.controller";
 import { UserCapabilityTimeService } from "./userCapabilityTime.service";
-import { ApiBody, ApiQuery, ApiTags } from "@nestjs/swagger";
 
 @Controller("userCapabilityTimes")
 @ApiTags("userCapabilityTimes")
+@ApiBearerAuth("JWT")
 export class UserCapabilityTimeController extends AppController {
   constructor(private readonly userCapabilityTimeService: UserCapabilityTimeService) {
     super();
@@ -16,10 +17,10 @@ export class UserCapabilityTimeController extends AppController {
   @ApiQuery({ name: "isDraft", required: false })
   @ApiBody({ type: String })
   async createUserCapabilityTime(
-    @Body() { userId, timeId, isDraft }: { userId: string, timeId: string, isDraft?: boolean },
+    @Body() { userId, timeId, isDraft }: { userId: string; timeId: string; isDraft?: boolean }
   ) {
-    await this.userCapabilityTimeService.createUserCapabilityTime({ userId, timeId, isDraft });
-    return this.created();
+    const response = await this.userCapabilityTimeService.createUserCapabilityTime({ userId, timeId, isDraft });
+    return this.ok(response);
   }
 
   @Put("/:userCapabilityTimeId")

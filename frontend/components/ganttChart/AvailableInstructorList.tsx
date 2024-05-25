@@ -43,7 +43,12 @@ const AvailableInstructorList = ({
           >
             {title}
           </h5>
-          <ul>
+          <ul
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+            }}
+          >
             {instructors
               .filter((user) => user.avatarUrl)
               .map(
@@ -52,7 +57,7 @@ const AvailableInstructorList = ({
                     <span
                       key={user.id}
                       id={user.id}
-                      draggable="true"
+                      draggable={title === 'Available'}
                       onDragStart={() => {
                         setUser(user);
                         setFromList(true);
@@ -60,8 +65,22 @@ const AvailableInstructorList = ({
                       onDrop={() => {
                         setFromList(false);
                       }}
-                      style={{ cursor: 'move' }}
+                      style={{ cursor: title === 'Available' ? 'move' : 'not-allowed', position: 'relative' }}
                     >
+                      {title !== 'Available' && (
+                        <div
+                          style={{
+                            position: 'absolute',
+                            bottom: 2.5,
+                            left: 0,
+                            width: '40px',
+                            height: '40px',
+                            borderRadius: '50%',
+                            background: 'rgba(0, 0, 0, 0.5)',
+                            zIndex: 10,
+                          }}
+                        ></div>
+                      )}
                       <Image src={user.avatarUrl} alt="avatar" width={40} height={40} style={{ borderRadius: '50%' }} />
                     </span>
                   )
@@ -75,16 +94,11 @@ const AvailableInstructorList = ({
   return (
     <div
       style={{
-        position: 'absolute',
-        zIndex: 100,
-        top: 580,
-        left: 308,
         background: 'white',
         padding: '20px',
-        outline: '2px solid var(--color-outline)',
-        boxShadow: '0 0 10px 0 rgba(0, 0, 0, 0.1)',
         borderRadius: '5px',
         display: 'flex',
+        width: '100%',
       }}
     >
       <InstructorList title="Available" instructors={availableInstructors} />

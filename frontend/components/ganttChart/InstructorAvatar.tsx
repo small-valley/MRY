@@ -1,45 +1,42 @@
-import React, { useState } from 'react';
+import { getAccessToken } from '@/app/actions/common';
 import Image from 'next/image';
+import React, { useState } from 'react';
 import { Instructor, Schedule } from '../../../shared/models/responses/getCohortsResponse';
-import { GetCohortsResponse } from '../../../shared/models/responses/getCohortsResponse';
 import './GanttChart.scss';
 
 interface InstructorAvatarProps {
   schedule: Schedule;
-  // cohorts: GetCohortsResponse[];
   open: { [key: string]: boolean };
   setOpen: (open: { [key: string]: boolean }) => void;
   user: Instructor | undefined;
-  setUser: (user: Instructor) => void;
-  // setCohorts: (cohorts: GetCohortsResponse[]) => void;
   getCohorts: () => void;
   courseInfoModalOpen: { [key: string]: boolean };
   fromList: boolean;
+  setFromList: (fromList: boolean) => void;
 }
 
 const InstructorAvatar = ({
   schedule,
-  // cohorts,
   open,
   setOpen,
   user,
-  setUser,
-  // setCohorts,
   getCohorts,
   courseInfoModalOpen,
   fromList,
+  setFromList,
 }: InstructorAvatarProps) => {
   const [dropDisabled, setDropDisabled] = useState(false);
-
-  const handleDragStart = () => {
-    setUser(schedule.instructor);
-  };
 
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     const sameUser = user?.id === e.currentTarget.id;
     const targetIsNotBlank = e.currentTarget.id !== '';
     if (fromList && courseInfoModalOpen[schedule.id]) return;
+    if (!fromList) {
+      setDropDisabled(true);
+      e.dataTransfer.dropEffect = 'none';
+      return;
+    }
     if (sameUser || targetIsNotBlank) {
       setDropDisabled(true);
       e.dataTransfer.dropEffect = 'none';
@@ -62,28 +59,11 @@ const InstructorAvatar = ({
     if (user?.id === droppedUserId) {
       return;
     }
-    // const newCohorts = cohorts.map((cohort: GetCohortsResponse) => {
-    //   cohort.schedules = cohort.schedules.map((schedule_: Schedule) => {
-    //     if (user && schedule_.id === schedule.id) {
-    //       return {
-    //         ...schedule_,
-    //         instructor: {
-    //           id: user.id,
-    //           name: user.name,
-    //           avatarUrl: user.avatarUrl,
-    //         },
-    //       };
-    //     } else {
-    //       return schedule_;
-    //     }
-    //   });
-    //   return cohort;
-    // });
-    // setCohorts(newCohorts);
-    const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+    const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL_B;
     const options = {
       method: 'PUT',
       headers: {
+        Authorization: `Bearer ${getAccessToken()}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
@@ -117,7 +97,7 @@ const InstructorAvatar = ({
         opacity: dropDisabled ? 0.5 : 1,
       }}
       id={schedule.instructor?.id || ''}
-      onDragStart={handleDragStart}
+      onDragStart={() => setFromList(false)}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
@@ -130,7 +110,7 @@ const InstructorAvatar = ({
       }}
     >
       <Image
-        src={schedule?.instructor?.avatarUrl ? schedule?.instructor?.avatarUrl : '/imgs/no-image-user.png'}
+        src={schedule?.instructor?.avatarUrl ? schedule?.instructor?.avatarUrl : '/imgs/user-round.png'}
         alt={`${schedule?.instructor?.name} Image`}
         width={avatarSize}
         height={avatarSize}

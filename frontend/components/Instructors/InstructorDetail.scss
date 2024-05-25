@@ -1,16 +1,5 @@
 @import '/app/globals.scss';
 
-button {
-  padding: 0.5rem 1rem;
-  background-color: $secondary-color;
-  border-radius: 5px;
-  color: $primary-color;
-}
-button:hover {
-  background-color: $primary-color;
-  color: white;
-}
-
 .instructorcard {
   display: flex;
   flex-direction: column;
@@ -90,20 +79,6 @@ button:hover {
       display: flex;
       gap: 0.5rem;
       flex-wrap: wrap;
-      button {
-        padding: 0.5rem 1rem;
-        border-radius: 5px;
-      }
-      button:not(:last-child):hover,
-      button:not(:last-child):hover::before {
-        background-color: $primary-color;
-        color: white;
-        content: 'Delete ? ';
-      }
-      button:last-child:hover {
-        background-color: $gray;
-        color: white;
-      }
     }
   }
   &_days {
@@ -114,20 +89,6 @@ button:hover {
       flex-direction: column;
       gap: 0.5rem;
       flex-wrap: wrap;
-      button {
-        padding: 0.5rem 1rem;
-        border-radius: 5px;
-      }
-      button:not(:last-child):hover,
-      button:not(:last-child):hover::before {
-        background-color: $primary-color;
-        color: white;
-        content: 'Delete ? ';
-      }
-      button:last-child:hover {
-        background-color: $gray;
-        color: white;
-      }
     }
   }
   &_course {
@@ -137,20 +98,6 @@ button:hover {
       display: flex;
       gap: 0.5rem;
       flex-wrap: wrap;
-      button {
-        padding: 0.5rem 1rem;
-        border-radius: 5px;
-      }
-      button:not(:last-child):hover,
-      button:not(:last-child):hover::before {
-        background-color: $primary-color;
-        color: white;
-        content: 'Delete ? ';
-      }
-      button:last-child:hover {
-        background-color: $gray;
-        color: white;
-      }
     }
   }
   li {
@@ -259,17 +206,6 @@ button:hover {
       flex-direction: column;
       gap: 0.5rem;
       flex-wrap: wrap;
-      button {
-        padding: 0.5rem 1rem;
-        border-radius: 5px;
-      }
-      button:not(:last-child):hover,
-      button:not(:last-child):hover::before {
-        background-color: $primary-color;
-        color: white;
-        content: 'Do you want to add in your profile? - ';
-      }
-
       .Morning {
         background-color: $light-blue;
         color: $blue;
@@ -388,5 +324,72 @@ button:hover {
       display: flex;
       gap: 1rem;
     }
+  }
+}
+
+.instructors_btn {
+  &_finishedit {
+    background-color: $secondary-color;
+    color: $primary-color;
+    padding: 0.3rem 0.5rem;
+    border-radius: 5px;
+  }
+  &_finishedit:hover {
+    background-color: $primary-color;
+    color: $secondary-color;
+  }
+  &_period {
+    background-color: $light-orange;
+    color: $red;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+  }
+  &_period:hover,
+  &_period:hover::before {
+    background-color: $light-orange;
+    color: $red;
+    content: 'Delete ? ';
+  }
+  &_days {
+    background-color: $light-blue;
+    color: $blue;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+  }
+  &_days:hover,
+  &_days:hover::before {
+    background-color: $light-blue;
+    color: $blue;
+    content: 'Delete ? ';
+  }
+  &_course {
+    background-color: $light-green;
+    color: $primary-color;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+  }
+  &_course:hover,
+  &_course:hover::before {
+    background-color: $light-green;
+    color: $primary-color;
+    content: 'Delete ? ';
+  }
+  &_add {
+    background-color: $secondary-color;
+    color: $primary-color;
+    padding: 0.3rem 0.5rem;
+    border-radius: 5px;
+  }
+  &_add:hover {
+    background-color: $primary-color;
+    color: $secondary-color;
+  }
+  &_popup {
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+  }
+  &_popup:hover,
+  &_popup:hover::before {
+    content: 'Add your profile ? ';
   }
 }

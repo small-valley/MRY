@@ -1,14 +1,15 @@
 'use client';
 
+import { updateIntructorRoom } from '@/app/actions/cohorts';
 import useAvailability from '@/app/hooks/cohorts/useAvailability';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { PutScheduleInstructorOrRoomRequest } from '../../../shared/models/requests/putScheduleRequest';
 import { Course } from '../../../shared/models/responses/getCohortResponse';
 import AvailableInstructor from '../AvailableInstructor/AvailableInstructor';
 import AvailableRoom from '../availabeRoom/AvailableRoom';
 import Todo from '../todo/Todo';
-import { updateIntructorRoom } from '@/app/actions/cohorts';
-import { PutScheduleInstructorOrRoomRequest } from '../../../shared/models/requests/putScheduleRequest';
 const BASE_CLASS = 'cohort_table_content';
+const BTN_BASE_CLASS = 'cohort_btn';
 
 type Props = {
   course: Course;
@@ -51,10 +52,6 @@ export default function CohortRowAssign({ course, setChange }: Props) {
         {availability && <AvailableRoom rooms={availability.availableRooms} roomId={roomId} setRoomId={setRoomId} />}
       </div>
       <div className={`${BASE_CLASS}_detailcourse_firstrow`}>
-        <div className={`${BASE_CLASS}_detailcourse_todo`}>
-          <h4>{course.name} Task</h4>
-          {availability && <Todo todos={availability.todos} />}
-        </div>
         <div className={`${BASE_CLASS}_detailcourse_instructor`}>
           <h4>Instructors</h4>
           {availability && (
@@ -65,8 +62,12 @@ export default function CohortRowAssign({ course, setChange }: Props) {
             />
           )}
         </div>
+        <div className={`${BASE_CLASS}_detailcourse_todo`}>
+          <h4>{course.name} Task</h4>
+          {availability && <Todo todos={availability.todos} scheduleId={course.scheduleId} setChange={setAssign} />}
+        </div>
         <div className={`${BASE_CLASS}_detailcourse_save`}>
-          <button type="button" onClick={handleUpdateRoomAndInstructor}>
+          <button className={`${BTN_BASE_CLASS}_save`} type="button" onClick={handleUpdateRoomAndInstructor}>
             Save
           </button>
         </div>

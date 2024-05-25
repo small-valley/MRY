@@ -2,10 +2,10 @@ import { Inject, Injectable } from "@nestjs/common";
 import { BadRequestError } from "src/error/badRequest.error";
 import { NotFoundError } from "src/error/notFound.error";
 import { ICourseRepository } from "src/repository/interfaces/ICourseRepository";
+import { CourseModel } from "src/repository/models/course.model";
 import { QueryRunner } from "typeorm";
 import { PostCourseRequest } from "../../../../shared/models/requests/postProgramRequest";
 import { PutCourseRequest } from "../../../../shared/models/requests/putProgramRequest";
-import { CourseModel } from "src/repository/models/course.model";
 
 @Injectable()
 export class CourseService {
@@ -18,6 +18,7 @@ export class CourseService {
 
   async updateCourse(request: PutCourseRequest) {
     await this.isExistsCourseId(request.id);
+    await this.checkDuplicateCourseName(request.name, null, request.id);
     await this.courseRepository.updateCourse(request);
   }
 
@@ -30,8 +31,8 @@ export class CourseService {
     await this.courseRepository.deleteCourseByProgramId(programId, queryRunner);
   }
 
-  async checkDuplicateCourseName(name: string) {
-    const isExistsCourseName = await this.courseRepository.isExistsCourseName(name);
+  async checkDuplicateCourseName(name: string, programId?: string, courseId?: string) {
+    const isExistsCourseName = await this.courseRepository.isExistsCourseName(name, programId, courseId);
     if (isExistsCourseName) {
       throw new BadRequestError(`course name: ${name} already exists`);
     }

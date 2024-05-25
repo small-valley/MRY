@@ -1,9 +1,8 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.scss';
-import Menu from '@/components/menu/menu';
-import Header from '@/components/header/header';
-import MobileMenu from '@/components/mobilemenu/mobilemenu';
+import Root from '@/components/root/Root';
+import Providers from '@/components/common/ProgressBarProvider';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -20,7 +19,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className} suppressHydrationWarning={true}>
-        {children}
+        <Root>
+          <Providers>{children}</Providers>
+        </Root>
       </body>
     </html>
   );

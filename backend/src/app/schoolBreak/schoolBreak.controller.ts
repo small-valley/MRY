@@ -1,14 +1,15 @@
-import { Controller, Delete, Get, Post, Body, Param } from "@nestjs/common";
-import { ApiBody, ApiTags } from "@nestjs/swagger";
-import { AppController } from "src/app.controller";
+import { Body, Controller, Delete, Get, Param, Post } from "@nestjs/common";
+import { ApiBearerAuth, ApiBody, ApiTags } from "@nestjs/swagger";
+import { AppController } from "src/app/app.controller";
+import { SchoolBreakModel } from "src/repository/models/schoolBreak.model";
 import { BaseResponse } from "../../../../shared/models/responses/baseResponse";
 import { GetSchoolBreaksResponse } from "../../../../shared/models/responses/getSchoolBreaksResponse";
-import { SchoolBreakService } from "./schoolBreak.service";
 import { PostSchoolBreakDto } from "./dto/postSchoolBreak.dto";
-import { SchoolBreakModel } from "src/repository/models/schoolBreak.model";
+import { SchoolBreakService } from "./schoolBreak.service";
 
 @Controller("school-breaks")
 @ApiTags("school-breaks")
+@ApiBearerAuth("JWT")
 export class SchoolBreakController extends AppController {
   constructor(private readonly schoolBreakService: SchoolBreakService) {
     super();

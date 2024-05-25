@@ -3,14 +3,16 @@
 import { PostCourseRequest, PostProgramRequest } from '../../../shared/models/requests/postProgramRequest';
 import { PutCourseRequest, PutProgramRequest } from '../../../shared/models/requests/putProgramRequest';
 import { GetProgramResponse } from '../../../shared/models/responses/getProgramResponse';
+import { getAccessToken } from './common';
 
 export const getPrograms = async (): Promise<GetProgramResponse[]> => {
   try {
-    const baseUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/programs`;
+    const baseUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL_E}/programs`;
 
     const response = await fetch(baseUrl, {
       method: 'GET',
       headers: {
+        Authorization: `Bearer ${getAccessToken()}`,
         'Content-Type': 'application/json',
       },
     });
@@ -29,11 +31,12 @@ export const getPrograms = async (): Promise<GetProgramResponse[]> => {
 
 export const updatePrograms = async (program: PutProgramRequest) => {
   try {
-    const baseUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/programs`;
+    const baseUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL_E}/programs`;
 
     const response = await fetch(baseUrl, {
       method: 'PUT',
       headers: {
+        Authorization: `Bearer ${getAccessToken()}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(program),
@@ -50,10 +53,11 @@ export const updatePrograms = async (program: PutProgramRequest) => {
 
 export const updateCourse = async (course: PutCourseRequest) => {
   try {
-    const baseUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/programs/courses`;
+    const baseUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL_E}/programs/courses`;
     const response = await fetch(baseUrl, {
       method: 'PUT',
       headers: {
+        Authorization: `Bearer ${getAccessToken()}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(course),
@@ -71,11 +75,12 @@ export const updateCourse = async (course: PutCourseRequest) => {
 
 export const createProgram = async (program: PostProgramRequest) => {
   try {
-    const baseUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/programs`;
+    const baseUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL_E}/programs`;
 
     const response = await fetch(baseUrl, {
       method: 'POST',
       headers: {
+        Authorization: `Bearer ${getAccessToken()}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(program),
@@ -93,11 +98,12 @@ export const createProgram = async (program: PostProgramRequest) => {
 
 export const createCourse = async (course: PostCourseRequest) => {
   try {
-    const baseUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/programs/courses`;
+    const baseUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL_E}/programs/courses`;
 
     const response = await fetch(baseUrl, {
       method: 'POST',
       headers: {
+        Authorization: `Bearer ${getAccessToken()}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(course),
@@ -115,11 +121,12 @@ export const createCourse = async (course: PostCourseRequest) => {
 
 export const deleteCourse = async (id: string) => {
   try {
-    const baseUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/programs/courses/${id}`;
+    const baseUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL_E}/programs/courses/${id}`;
 
     const response = await fetch(baseUrl, {
       method: 'DELETE',
       headers: {
+        Authorization: `Bearer ${getAccessToken()}`,
         'Content-Type': 'application/json',
       },
     });
@@ -135,11 +142,12 @@ export const deleteCourse = async (id: string) => {
 
 export const deleteProgram = async (id: string) => {
   try {
-    const baseUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/programs/${id}`;
+    const baseUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL_E}/programs/${id}`;
 
     const response = await fetch(baseUrl, {
       method: 'DELETE',
       headers: {
+        Authorization: `Bearer ${getAccessToken()}`,
         'Content-Type': 'application/json',
       },
     });

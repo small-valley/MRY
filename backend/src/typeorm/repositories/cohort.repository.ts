@@ -7,13 +7,17 @@ import {
   RecentCohortModel,
 } from "src/repository/models/cohort.model";
 import { QueryRunner, Repository } from "typeorm";
+import { GetCohortsForFilterResponse } from "../../../../shared/models/responses/getCohortsForFilterResponse";
 import { GetCohortsResponse } from "../../../../shared/models/responses/getCohortsResponse";
 import { Cohort } from "../entities/cohort.entity";
+import { Schedule } from "../entities/schedule.entity";
 
 export class CohortRepository implements ICohortRepository {
   constructor(
     @InjectRepository(Cohort)
-    private cohortRepository: Repository<Cohort>
+    private cohortRepository: Repository<Cohort>,
+    @InjectRepository(Schedule)
+    private scheduleRepository: Repository<Schedule>
   ) {}
 
   async isExistsCohortId(cohortId: string): Promise<boolean> {
@@ -32,6 +36,7 @@ export class CohortRepository implements ICohortRepository {
       .leftJoin("schedule.user", "user")
       .leftJoin("schedule.day", "day")
       .leftJoin("schedule.room", "room")
+      .where("cohort.is_deleted = false")
       .select([
         "program.name",
         "cohort.id",
@@ -49,8 +54,8 @@ export class CohortRepository implements ICohortRepository {
         "user.avatarUrl",
         "room.name",
       ])
-      .orderBy("cohort.name", "ASC")
-      .addOrderBy("schedule.startDate", "ASC");
+      .orderBy("schedule.startDate", "ASC")
+      .addOrderBy("cohort.name", "ASC");
 
     if (startDate) {
       query.andWhere("schedule.startDate >= :startDate", { startDate });
@@ -63,6 +68,28 @@ export class CohortRepository implements ICohortRepository {
     const cohorts = await query.getMany();
 
     return this.convertToGetCohortsResponse(cohorts);
+  }
+
+  async getCohortsForFilter({ startDate, endDate }): Promise<GetCohortsForFilterResponse[]> {
+    const query = this.cohortRepository
+      .createQueryBuilder("cohort")
+      .innerJoin("cohort.program", "program")
+      .innerJoin("cohort.schedules", "schedule")
+      .select(["program.id", "program.name", "cohort.id", "cohort.name"])
+      .orderBy("schedule.startDate", "ASC")
+      .addOrderBy("cohort.name", "ASC");
+
+    if (startDate) {
+      query.andWhere("schedule.startDate >= :startDate", { startDate });
+    }
+
+    if (endDate) {
+      query.andWhere("schedule.endDate <= :endDate", { endDate });
+    }
+
+    const cohorts = await query.getMany();
+
+    return this.convertToGetCohortsForFilterResponse(cohorts);
   }
 
   async getCohort(cohortId: string) {
@@ -91,6 +118,7 @@ export class CohortRepository implements ICohortRepository {
         "course.name",
         "day.id",
         "day.name",
+        "day.hours_per_week",
         "user.id",
         "user.firstName",
         "room.id",
@@ -106,13 +134,22 @@ export class CohortRepository implements ICohortRepository {
   }
 
   async getRecentCohorts(programId: string): Promise<RecentCohortModel[]> {
+    const currentDate = new Date();
     const cohorts = await this.cohortRepository
       .createQueryBuilder("cohort")
+      .innerJoin(
+        `(${this.getCohortIdWithEarliestStartDateSchduleQuery().getQuery()})`,
+        `min`,
+        `cohort.id = min.cohort_id`
+      )
       .where(`cohort.id NOT IN(${this.getCohortIdsWithNullScheduleQuery(programId).getQuery()})`)
-      .andWhere("cohort.program_id = :programId", { programId })
-      .orderBy("cohort.created_at", "DESC")
+      .andWhere(`cohort.program_id = '${programId}'`)
+      .andWhere(
+        `min.min_start_date > '${currentDate.getFullYear()}-${currentDate.getMonth() + 1}-${currentDate.getDate()}'`
+      )
+      .orderBy("cohort.createdAt", "DESC")
       .take(5)
-      .select(["cohort.id", "cohort.name"])
+      .select(["cohort.id", "cohort.name", "cohort.createdAt"])
       .getMany();
 
     return cohorts.map((cohort) => {
@@ -128,7 +165,19 @@ export class CohortRepository implements ICohortRepository {
     courseId: string,
     scheduleId: string
   ): Promise<CurrrentCourseHour | undefined> {
-    return (await this.getCourseHourQuery(cohortId, courseId, scheduleId).getRawOne()) as CurrrentCourseHour;
+    const result = (await this.getCourseHourQuery(
+      cohortId,
+      courseId,
+      scheduleId
+    ).getRawOne()) as CurrentCourseHourResult;
+    if (!result?.course_id) {
+      return undefined;
+    }
+    return {
+      courseId: result?.course_id,
+      currentHour: result?.current_hour,
+      courseHour: result?.course_hour,
+    } as CurrrentCourseHour;
   }
 
   async insertCohort(cohort: InsertCohortModel, queryRunner?: QueryRunner): Promise<string> {
@@ -171,6 +220,7 @@ export class CohortRepository implements ICohortRepository {
           courseName: schedule.course_name,
           dayId: schedule.day_id,
           dayName: schedule.day_name,
+          dayHoursPerWeek: schedule.hours_per_week,
           userId: schedule.user_id,
           userFirstName: schedule.user_first_name,
           roomId: schedule.room_id,
@@ -214,14 +264,49 @@ export class CohortRepository implements ICohortRepository {
     });
   }
 
+  private convertToGetCohortsForFilterResponse(cohorts): GetCohortsForFilterResponse[] {
+    const result: GetCohortsForFilterResponse[] = [];
+
+    cohorts.forEach((cohort) => {
+      const existingProgram = result.find((item) => item.programId === cohort.program.id);
+      if (existingProgram) {
+        existingProgram.cohorts.push({
+          cohortId: cohort.id,
+          cohortName: cohort.name,
+        });
+      } else {
+        result.push({
+          programId: cohort.program.id,
+          programName: cohort.program.name,
+          cohorts: [
+            {
+              cohortId: cohort.id,
+              cohortName: cohort.name,
+            },
+          ],
+        });
+      }
+    });
+
+    return result;
+  }
+
   private getCohortIdsWithNullScheduleQuery(programId: string) {
     return this.cohortRepository
       .createQueryBuilder("c")
       .innerJoin("schedules", "s", "c.id = s.cohort_id AND s.is_deleted = false")
-      .where("(s.course_id IS NULL OR s.day_id IS NULL)")
+      .where("s.course_id IS NULL")
       .andWhere("c.is_deleted = false")
-      .andWhere("c.program_id = :programId", { programId })
+      .andWhere(`c.program_id = '${programId}'`)
       .select("c.id");
+  }
+
+  private getCohortIdWithEarliestStartDateSchduleQuery() {
+    return this.scheduleRepository
+      .createQueryBuilder("s")
+      .where("s.is_deleted = false")
+      .groupBy("s.cohort_id")
+      .select("s.cohort_id, MIN(s.start_date) AS min_start_date");
   }
 }
 
@@ -241,10 +326,20 @@ interface CohortResult {
   course_name: string;
   day_id: string;
   day_name: string;
+  hours_per_week: number;
   user_id: string;
   user_first_name: string;
   room_id: string;
   room_name: string;
+  current_hour: number;
+  course_hour: number;
+}
+
+/*
+ * Custom return type for getCourseHourQuery
+ */
+interface CurrentCourseHourResult {
+  course_id: string;
   current_hour: number;
   course_hour: number;
 }

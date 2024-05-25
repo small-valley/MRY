@@ -1,4 +1,4 @@
-import { Schedule } from "../../../shared/models/responses/getCohortsResponse";
+import { Schedule } from '../../../shared/models/responses/getCohortsResponse';
 
 type Props = {
   schedules: Schedule[];
@@ -12,7 +12,7 @@ export default function CourseMonth({ schedules, name, room, period }: Props) {
     <>
       {schedules.length === 1 ? (
         <>
-          {schedules[0].days[0].includes("Monday") ? (
+          {schedules[0].days[0] && schedules[0].days[0].includes('Monday') ? (
             <div className={`courseFull ${period}`}>
               {schedules[0].course.name} - {name} / {room}
             </div>
@@ -22,17 +22,18 @@ export default function CourseMonth({ schedules, name, room, period }: Props) {
         </>
       ) : (
         <div className="courseHalf">
-          {schedules.map((schedule, index) =>
-            schedule.days[0].includes("Monday") ? (
-              <div key={`${name}-${index}`} className={`half ${period}`}>
-                {schedule.course.name} - {name} / {room}
-              </div>
-            ) : (
-              <div key={`${name}-${index}`} className={`half ${period}`}>
-                {schedule.course.name} - {name} / {room}
-              </div>
-            )
-          )}
+          {schedules &&
+            schedules.map((schedule, index) =>
+              schedule.days[0] && schedule.days[0].includes('Monday') ? (
+                <div key={`${name}-${index}`} className={`half ${period}`}>
+                  {schedule.course.name} - {name} / {room}
+                </div>
+              ) : (
+                <div key={`${name}-${index}`} className={`half ${period}`}>
+                  {schedule.course.name} - {name} / {room}
+                </div>
+              )
+            )}
         </div>
       )}
     </>

@@ -1,16 +1,24 @@
 'use client';
-import { usePathname } from 'next/navigation';
+import { useCurrentUserContext } from '@/app/contexts/CurrentUserContext';
+import { Bell, CalendarCheck, GraduationCap, Home, NotebookText, UsersRound } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import './menu.scss';
-import { Home, GraduationCap, NotebookText, UsersRound, CalendarCheck, Bell } from 'lucide-react';
-import { useState } from 'react';
 
 const BASE_CLASS = 'menu';
 
 export default function Menu() {
   const [isManager, setIsManager] = useState<boolean>(true);
   const currentRouter = usePathname();
+  const { currentUser } = useCurrentUserContext();
+
+  useEffect(() => {
+    if (currentUser) {
+      setIsManager(currentUser?.role === 'manager');
+    }
+  }, [currentUser]);
 
   const NAV_ITEMS = [
     { name: 'Home', path: '/home', icon: <Home size={25} /> },
@@ -44,32 +52,33 @@ export default function Menu() {
 
   return (
     <>
-      <div className={BASE_CLASS}>
-        <a href="/home">
-          <Image className="logo" src="/imgs/logo_png.png" alt="logo" width={180} height={100} />
-        </a>
-        <ul className={`${BASE_CLASS}_links`}>
-          {isManager &&
-            NAV_ITEMS.map(({ name, path, icon }, index) => (
-              <li key={`${name}-${index}`} className={`${currentRouter === path + '/' ? 'current' : ''}`}>
-                <Link href={path}>
-                  {icon}
-                  <div className="title">{name}</div>
-                </Link>
-              </li>
-            ))}
-
-          {!isManager &&
-            NAV_INSTRUCTOR_ITEMS.map(({ name, path, icon }, index) => (
-              <li key={`${name}-${index}`} className={`${currentRouter === path + '/' ? 'current' : ''}`}>
-                <Link href={path}>
-                  {icon}
-                  <div className="title">{name}</div>
-                </Link>
-              </li>
-            ))}
-        </ul>
-      </div>
+      {currentUser && (
+        <div className={BASE_CLASS}>
+          <a href="/home">
+            <Image className="logo" src="/imgs/logo_png.png" alt="logo" width={180} height={100} />
+          </a>
+          <ul className={`${BASE_CLASS}_links`}>
+            {isManager &&
+              NAV_ITEMS.map(({ name, path, icon }, index) => (
+                <li key={`${name}-${index}`} className={`${currentRouter === path ? 'current' : ''}`}>
+                  <Link href={path}>
+                    {icon}
+                    <div className="title">{name}</div>
+                  </Link>
+                </li>
+              ))}
+            {!isManager &&
+              NAV_INSTRUCTOR_ITEMS.map(({ name, path, icon }, index) => (
+                <li key={`${name}-${index}`} className={`${currentRouter === path ? 'current' : ''}`}>
+                  <Link href={path}>
+                    {icon}
+                    <div className="title">{name}</div>
+                  </Link>
+                </li>
+              ))}
+          </ul>
+        </div>
+      )}
     </>
   );
 }

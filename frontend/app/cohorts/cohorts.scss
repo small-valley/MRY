@@ -14,6 +14,11 @@ $list-radius: 0px;
     &_filter {
       display: flex;
       gap: 1rem;
+      &_calendar {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+      }
       &_selector {
         display: flex;
         align-items: center;
@@ -30,36 +35,12 @@ $list-radius: 0px;
         div {
           padding-right: 0.5rem;
         }
-        button {
-          padding: 0.2rem 0.5rem;
-          background-color: $primary-color;
-          color: white;
-          border-radius: 5px;
-        }
-        button:hover {
-          padding: 0.2rem 0.5rem;
-          background-color: $secondary-color;
-          color: $primary-color;
-          border-radius: 5px;
-        }
       }
     }
     &_button {
       display: flex;
       gap: 0.5rem;
       padding-right: 3.5rem;
-      button {
-        padding: 0.2rem 0.5rem;
-        background-color: $primary-color;
-        color: white;
-        border-radius: 5px;
-      }
-      button:hover {
-        padding: 0.2rem 0.5rem;
-        background-color: $secondary-color;
-        color: $primary-color;
-        border-radius: 5px;
-      }
     }
   }
   &_title {
@@ -95,32 +76,6 @@ $list-radius: 0px;
         border-radius: 5px;
       }
     }
-    &_del {
-      button {
-        background-color: $delete;
-        color: $red;
-        padding: 0.4rem 0.7rem;
-      }
-      button:hover {
-        border: none;
-        background-color: $red;
-        color: $delete;
-        padding: 0.4rem 0.7rem;
-      }
-    }
-    &_edit {
-      button {
-        background-color: $secondary-color;
-        color: $primary-color;
-        padding: 0.4rem 0.7rem;
-      }
-      button:hover {
-        border: none;
-        background-color: $primary-color;
-        color: $secondary-color;
-        padding: 0.4rem 0.7rem;
-      }
-    }
   }
   &_table {
     &_header {
@@ -138,7 +93,6 @@ $list-radius: 0px;
           border-bottom: 1px solid rgba($gray, 0.3);
         }
       }
-      //button
       &_btn {
         width: 15%;
       }
@@ -159,6 +113,14 @@ $list-radius: 0px;
             align-items: center;
             text-align: center;
             padding: 0.7rem 0;
+          }
+          .overtime {
+            color: $red;
+            font-weight: 600;
+          }
+          .lesstime {
+            color: $blue;
+            font-weight: 600;
           }
           .finished {
             background-color: $finished;
@@ -228,19 +190,6 @@ $list-radius: 0px;
         justify-content: center;
         padding: 0.5rem 2rem;
         border: 1px solid $primary-color;
-        button {
-          background-color: $delete;
-          color: $red;
-          border-radius: 5px;
-          padding: 0.5rem;
-        }
-        button:hover {
-          border: none;
-          background-color: $red;
-          color: $delete;
-          border-radius: 5px;
-          padding: 0.5rem;
-        }
       }
       &_edit {
         width: 85%;
@@ -249,7 +198,6 @@ $list-radius: 0px;
         align-items: center;
         text-align: center;
         padding: 0;
-
         &_date {
           padding: 0.5rem;
           border-radius: 5px;
@@ -302,18 +250,6 @@ $list-radius: 0px;
         display: flex;
         width: 85%;
         justify-content: center;
-        button {
-          background-color: $light-gray;
-          color: $gray;
-          border-radius: 5px;
-          padding: 0.5rem;
-        }
-        button:hover {
-          border: none;
-          background-color: $gray;
-          color: $light-gray;
-          border-radius: 5px;
-        }
       }
 
       &_detailcourse {
@@ -326,7 +262,7 @@ $list-radius: 0px;
         &_firstrow {
           display: grid;
           gap: 3rem;
-          grid-template-columns: 35% 50% 10%;
+          grid-template-columns: 50% 35% 10%;
         }
         h4 {
           padding-bottom: 1rem;
@@ -338,26 +274,17 @@ $list-radius: 0px;
         &_save {
           display: flex;
           align-items: end;
-          button {
-            padding: 0.5rem 1rem;
-            background-color: $primary-color;
-            border: none;
-            border-radius: 5px;
-            color: white;
-          }
-          button:hover {
-            background-color: $secondary-color;
-            color: $primary-color;
-          }
         }
       }
     }
   }
 }
 
+.course_init_popup,
 .period_init_popup {
   display: none;
 }
+
 .period_popup_selected {
   display: flex;
   align-items: center;
@@ -388,6 +315,42 @@ $list-radius: 0px;
   }
 }
 
+.course_popup_selected {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-45%, -50%);
+  z-index: 100;
+  width: 100%;
+  height: 100%;
+  background-color: rgba($light-gray, 0.8);
+  padding-top: 5em;
+  padding-bottom: 5em;
+  &_wrap {
+    z-index: 100;
+    border: 2px solid $primary-color;
+    width: 40vw;
+    height: fit-content;
+    border-radius: 10px;
+    background-color: white;
+    padding: 3rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+    &_course {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      justify-content: center;
+    }
+  }
+}
+
 .cohort_edit_btn {
   &_days {
     padding: 1rem 1.5rem;
@@ -407,5 +370,34 @@ $list-radius: 0px;
   &_close:hover {
     background-color: $primary-color;
     color: white;
+  }
+}
+
+.cohort_btn {
+  &_save {
+    background-color: $primary-color;
+    color: white;
+    padding: 0.5rem;
+    border-radius: 5px;
+  }
+  &_save:hover {
+    background-color: $secondary-color;
+    color: $primary-color;
+    border: 1px solid $primary-color;
+  }
+  &_del {
+    background-color: $red;
+    color: white;
+    padding: 0.5rem;
+    border-radius: 5px;
+  }
+  &_del:hover {
+    background-color: $delete;
+    color: $red;
+    border: 1px solid $red;
+  }
+  &_calendar {
+    background-color: transparent;
+    color: $primary-color;
   }
 }

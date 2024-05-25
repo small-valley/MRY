@@ -1,8 +1,8 @@
 import { Check, Plus, Trash2, X } from 'lucide-react';
 import { Dispatch, SetStateAction, useState } from 'react';
 //import shared model Fetch Type
-import { GetProgramResponse } from '../../../shared/models/responses/getProgramResponse';
 import { PutProgramRequest } from '../../../shared/models/requests/putProgramRequest';
+import { GetProgramResponse } from '../../../shared/models/responses/getProgramResponse';
 //function, type
 import { deleteProgram, updatePrograms } from '@/app/actions/programs';
 //use component
@@ -14,6 +14,7 @@ type Props = {
   setChange: Dispatch<SetStateAction<number>>;
 };
 const BASE_CLASS = 'program_content_wrap';
+const BTN_BASE_CLASS = 'program_btn';
 
 export default function ProgramShow({ program, setChange }: Props) {
   const [message, setMessage] = useState<string>('');
@@ -88,10 +89,10 @@ export default function ProgramShow({ program, setChange }: Props) {
                 <>
                   <form className={`${BASE_CLASS}_course_row_del`} action={handleDeleteProgram}>
                     <div> Confirm Delete {program.name} ?</div>
-                    <button type="submit">
+                    <button type="submit" className={`${BTN_BASE_CLASS}_del`}>
                       <Trash2 size={15} />
                     </button>
-                    <button type="button" onClick={() => setIsDelete(false)}>
+                    <button className={`${BTN_BASE_CLASS}_del`} type="button" onClick={() => setIsDelete(false)}>
                       <X size={15} />
                     </button>
                   </form>
@@ -107,10 +108,10 @@ export default function ProgramShow({ program, setChange }: Props) {
                       onChange={(event) => setTitle(event.target.value)}
                       required={true}
                     />
-                    <button type="submit">
+                    <button className={`${BTN_BASE_CLASS}_save`} type="submit">
                       <Check size={15} />
                     </button>
-                    <button type="button" onClick={() => setIsDelete(true)}>
+                    <button className={`${BTN_BASE_CLASS}_del`} type="button" onClick={() => setIsDelete(true)}>
                       <Trash2 size={15} />
                     </button>
                   </form>
@@ -122,15 +123,18 @@ export default function ProgramShow({ program, setChange }: Props) {
           )}
         </div>
 
-        {program.courses.map((course) => (
-          <CourseShow course={course} setChange={setChange} setMessage={setMessage} />
-        ))}
+        {program.courses.map(
+          (course) =>
+            course.name != 'Break' && (
+              <CourseShow key={course.id} course={course} setChange={setChange} setMessage={setMessage} />
+            )
+        )}
         <div className={`${BASE_CLASS}_course_row`}>
           {isAdd ? (
-            <CourseAdd setIsAdd={setIsAdd} setChange={setChange} programId={program.id} />
+            <CourseAdd setIsAdd={setIsAdd} setChange={setChange} setMessage={setMessage} programId={program.id} />
           ) : (
             <>
-              <button type="button" className={`${BASE_CLASS}_course_row_btnadd`} onClick={() => setIsAdd(true)}>
+              <button className={`${BTN_BASE_CLASS}_newcourse`} type="button" onClick={() => setIsAdd(true)}>
                 <Plus size={15} />
               </button>
             </>

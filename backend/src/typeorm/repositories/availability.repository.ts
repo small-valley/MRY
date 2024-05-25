@@ -60,6 +60,11 @@ export class AvailabilityRepository implements IAvailabilityRepository {
             WHERE s.room_id IS NOT NULL
         )`
       )
+      .andWhere(
+        `CASE WHEN EXISTS (${this.getRoomIdFromScheduleQuery(scheduleId, "sRoomId").andWhere("sRoomId.room_id IS NOT NULL").getQuery()})
+        THEN room.id NOT IN (${this.getRoomIdFromScheduleQuery(scheduleId, "sRoomId").getQuery()})
+        ELSE 1 = 1 END`
+      )
       .andWhere("room.is_deleted = false")
       .select(["room.id AS id", "room.name AS name", "room.floor AS floor"]);
 
@@ -121,6 +126,7 @@ export class AvailabilityRepository implements IAvailabilityRepository {
         `${alias}c.time_id`,
         `${alias}c.program_id`,
         `${alias}.day_id`,
+        `${alias}.room_id`,
       ]);
   }
 
@@ -134,6 +140,10 @@ export class AvailabilityRepository implements IAvailabilityRepository {
 
   getTimeIdFromScheduleQuery(scheduleId: string, alias: string) {
     return this.getScheduleQuery(scheduleId, alias).select(`${alias}c.time_id`).take(1);
+  }
+
+  getRoomIdFromScheduleQuery(scheduleId: string, alias: string) {
+    return this.getScheduleQuery(scheduleId, alias).select(`${alias}.room_id`).take(1);
   }
 
   getTakenRoomIds(scheduleId: string) {
@@ -365,7 +375,11 @@ export class AvailabilityRepository implements IAvailabilityRepository {
       OR (tsd.start_time <= t.start_time AND t.end_time <= tsd.end_time))`
         )
         // exclude the instructor who charges the given schedule
-        .andWhere(`tsd.id NOT IN (${this.getUserIdFromScheduleQuery(scheduleId, "os").getQuery()})`)
+        .andWhere(
+          `CASE WHEN EXISTS (${this.getUserIdFromScheduleQuery(scheduleId, "os").andWhere("os.userId IS NOT NULL").getQuery()})
+            THEN tsd.id NOT IN (${this.getUserIdFromScheduleQuery(scheduleId, "os").getQuery()})
+            ELSE 1 = 1 END`
+        )
         .select([
           `'${Availability.OVERLAPPING_SCHEDULE}' AS availability`,
           "tsd.id AS user_id",

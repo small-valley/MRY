@@ -9,14 +9,15 @@ import { createCourse } from '@/app/actions/programs';
 import { colors, setChange, setIsAdd } from '@/type/programs';
 
 const BASE_CLASS = 'program_content_wrap';
-
+const BTN_BASE_CLASS = 'program_btn';
 type Props = {
   setIsAdd: setIsAdd;
   setChange: setChange;
+  setMessage: (message: string) => void;
   programId: string;
 };
 
-export default function CourseAdd({ setIsAdd, setChange, programId }: Props) {
+export default function CourseAdd({ setIsAdd, setChange, setMessage, programId }: Props) {
   const [title, setTitle] = useState<string>('');
   const [hour, setHour] = useState<number>(0);
 
@@ -26,10 +27,19 @@ export default function CourseAdd({ setIsAdd, setChange, programId }: Props) {
       courses: { name: formData.get('title'), hour: formData.get('hour'), color: formData.get('color') },
     };
 
-    const success = await createCourse(newCourse);
-    if (success) {
+    try {
+      const success = await createCourse(newCourse);
+      if (success) {
+        setIsAdd(false);
+        setChange(Math.random());
+      }
+    } catch (error: any) {
       setIsAdd(false);
       setChange(Math.random());
+      setMessage('The Course can not create');
+      setTimeout(() => {
+        setMessage('');
+      }, 4000);
     }
   };
 
@@ -73,10 +83,10 @@ export default function CourseAdd({ setIsAdd, setChange, programId }: Props) {
             </>
           ))}
         </select>
-        <button type="submit">
+        <button className={`${BTN_BASE_CLASS}_courseadd`} type="submit">
           <Check size={15} />
         </button>
-        <button type="button" onClick={() => setIsAdd(false)}>
+        <button className={`${BTN_BASE_CLASS}_courseadd`} type="button" onClick={() => setIsAdd(false)}>
           <X size={15} />
         </button>
       </form>

@@ -4,23 +4,6 @@
   cursor: pointer;
   position: relative;
   color: $primary-color;
-  button {
-    background-color: Transparent;
-    color: $gray;
-    border: 0;
-    display: flex;
-    align-items: center;
-    font-size: 1rem;
-    gap: 1rem;
-    img {
-      border-radius: 50%;
-    }
-  }
-  button:hover {
-    background-color: Transparent;
-    color: black;
-    border: none;
-  }
   &_content {
     font-size: 0.8rem;
     display: none;
@@ -68,39 +51,73 @@
   padding-top: 5em;
   padding-bottom: 5em;
   .message_popup {
+    position: relative;
     z-index: 100;
     width: 50vw;
-    height: 50vh;
-    box-shadow: $gray 0.5px 0.5px 2px;
+    height: fit-content;
+    border: 2px solid $primary-color;
     border-radius: 10px;
-    background-color: $light-gray;
-    padding: 1rem;
+    background-color: white;
     form {
       padding: 2rem;
       display: flex;
       flex-direction: column;
-      gap: 1rem;
+      gap: 2rem;
       h3 {
         text-align: center;
       }
-      input {
+      textarea {
         height: 30vh;
-      }
-      input:focus {
-        outline: 2px solid $primary-color;
-      }
-      button {
-        padding: 0.5rem 1rem;
+        padding: 0.5rem;
         font-size: 1rem;
-        background-color: $primary-color;
-        color: white;
+        border: 1px solid $primary-color;
         border-radius: 5px;
       }
-      button:hover {
-        background-color: rgba($primary-color, 0.8);
+      textarea:focus {
+        outline: 2px solid $primary-color;
       }
     }
+    &_btn {
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      background-color: $primary-color;
+      color: white;
+      border-radius: 5px;
+    }
+    &_btn:hover {
+      background-color: rgba($primary-color, 0.8);
+    }
   }
+}
+
+.currentuser_btn {
+  &_user {
+    background-color: Transparent;
+    color: $gray;
+    border: 0;
+    display: flex;
+    align-items: center;
+    font-size: 1rem;
+    gap: 1rem;
+    img {
+      border-radius: 50%;
+    }
+  }
+  &_user:hover {
+    background-color: Transparent;
+    color: black;
+    border: none;
+  }
+}
+
+.message_close_button {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 0.5rem 1rem;
+  background-color: $primary-color;
+  color: white;
+  border-radius: 0 8px 0 0;
 }
 
 @media (max-width: 1000px) {

@@ -21,12 +21,6 @@
       &_btn {
         display: flex;
         gap: 0.5rem;
-        button {
-          padding: 1rem 1rem;
-        }
-        button:hover {
-          padding: 1rem 1rem;
-        }
       }
     }
     &_button {
@@ -313,5 +307,18 @@
         }
       }
     }
+  }
+}
+
+.instructors_btn {
+  &_list {
+    padding: 0.5rem 1rem;
+    background-color: $primary-color;
+    color: white;
+    border-radius: 5px;
+  }
+  &_list:hover {
+    background-color: $secondary-color;
+    color: $primary-color;
   }
 }

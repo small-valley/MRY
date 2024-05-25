@@ -1,5 +1,10 @@
 import { QueryRunner } from "typeorm";
-import { InsertScheduleModel, ScheduleModel, UpdateScheduleModel, GetOngoingAndUpcomingScheduleModel } from "../models/schedule.model";
+import {
+  GetOngoingAndUpcomingScheduleModel,
+  InsertScheduleModel,
+  ScheduleModel,
+  UpdateScheduleModel,
+} from "../models/schedule.model";
 
 export interface IScheduleRepository {
   getOngoingAndUpcomingSchedules(userId: string): Promise<GetOngoingAndUpcomingScheduleModel[]>;
@@ -12,6 +17,7 @@ export interface IScheduleRepository {
     scheduleId?: string,
     cohortId?: string
   ): Promise<ScheduleModel[]>;
-  insertSchedule(schedule: InsertScheduleModel, queryRunner?: QueryRunner): Promise<void>;
+  insertSchedule(schedule: InsertScheduleModel, queryRunner?: QueryRunner): Promise<string>;
   updateScheduleCourse(schedule: UpdateScheduleModel, queryRunner?: QueryRunner): Promise<void>;
+  deleteSchedule(scheduleId: string, queryRunner?: QueryRunner): Promise<void>;
 }

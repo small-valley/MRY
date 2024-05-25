@@ -4,7 +4,7 @@ import { Dispatch, SetStateAction, useState } from 'react';
 import { PutCourseRequest } from '../../../shared/models/requests/putProgramRequest';
 //function, type
 import { deleteCourse, updateCourse } from '@/app/actions/programs';
-import { Course, colors, setChange } from '@/type/programs';
+import { Course, colors } from '@/type/programs';
 type Props = {
   course: Course;
   setChange: Dispatch<SetStateAction<number>>;
@@ -12,7 +12,7 @@ type Props = {
 };
 
 const BASE_CLASS = 'program_content_wrap';
-
+const BTN_BASE_CLASS = 'program_btn';
 export default function CourseShow({ course, setChange, setMessage }: Props) {
   const [isClick, setClick] = useState(false);
   const [isDelete, setIsDelete] = useState(false);
@@ -79,11 +79,11 @@ export default function CourseShow({ course, setChange, setMessage }: Props) {
             {isDelete ? (
               <>
                 <form className={`${BASE_CLASS}_course_row_del`} action={handleDeleteCourse}>
-                  <div> Confirm Delete {course.name} ?</div>
-                  <button type="submit">
+                  <h5> Confirm Delete {course.name} ?</h5>
+                  <button className={`${BTN_BASE_CLASS}_del`} type="submit">
                     <Trash2 size={15} />
                   </button>
-                  <button type="button" onClick={() => setIsDelete(false)}>
+                  <button className={`${BTN_BASE_CLASS}_del`} type="button" onClick={() => setIsDelete(false)}>
                     <X size={15} />
                   </button>
                 </form>
@@ -109,29 +109,17 @@ export default function CourseShow({ course, setChange, setMessage }: Props) {
                     onChange={(event) => setHour(event.target.valueAsNumber)}
                     required={true}
                   />
-                  <select name="color">
+                  <select name="color" defaultValue={colors[colors.findIndex((color) => color === course.color)]}>
                     {colors.map((color, index) => (
-                      <>
-                        {color === course.color ? (
-                          <>
-                            <option value={color} key={`${index}-${color}`} selected>
-                              {color}
-                            </option>
-                          </>
-                        ) : (
-                          <>
-                            <option value={color} key={`${index}-${color}`}>
-                              {color}
-                            </option>
-                          </>
-                        )}
-                      </>
+                      <option value={color} key={`${index}-${color}`}>
+                        {color}
+                      </option>
                     ))}
                   </select>
-                  <button type="submit">
+                  <button className={`${BTN_BASE_CLASS}_add`} type="submit">
                     <Check size={15} />
                   </button>
-                  <button type="button" onClick={() => setIsDelete(true)}>
+                  <button className={`${BTN_BASE_CLASS}_del`} type="button" onClick={() => setIsDelete(true)}>
                     <Trash2 size={15} />
                   </button>
                 </form>

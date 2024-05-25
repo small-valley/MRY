@@ -10,22 +10,7 @@
   background-color: $secondary-color;
   border-top-left-radius: 5px;
   border-top-right-radius: 5px;
-  button {
-    font-size: 1rem;
-    color: $primary-color;
-    background-color: Transparent;
-    border: none;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    cursor: pointer;
-  }
-  button:hover {
-    cursor: pointer;
-    border: none;
-    background-color: Transparent;
-    color: $primary-color;
-  }
+
   &_content {
     display: none;
     position: absolute;

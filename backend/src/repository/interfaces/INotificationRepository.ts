@@ -4,6 +4,7 @@ import {
   GetNotificationModel,
 } from "../models/notification.model";
 import { GetNotificationBySenderRequest } from "../../../../shared/models/requests/getNotificationBySenderRequest";
+import { PostNotificationResponse } from "../../../../shared/models/responses/postNotificationResponse";
 
 
 export interface INotificationRepository {
@@ -15,6 +16,6 @@ export interface INotificationRepository {
   ): Promise<GetNotificationModel[]>;
   createNotification(
     { title, description, senderId, receiverId, type, userCapabilityDayId, userCapabilityTimeId, userCapabilityCourseId, userDayoffId }: PostNotificationRequest
-  ): Promise<void>;
+  ): Promise<PostNotificationResponse>;
   updateNotification({ notificationId, isApproved }: { notificationId: string, isApproved: boolean }): Promise<void>;
 }

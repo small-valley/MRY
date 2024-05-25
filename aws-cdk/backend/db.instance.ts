@@ -32,6 +32,7 @@ export const db = (scope: Construct, vpc: ec2.IVpc) => {
       username: process.env.POSTGRE_DATABASE_USER_NAME,
       password: cdk.SecretValue.unsafePlainText(process.env.POSTGRE_DATABASE_PASSWORD),
     },
+    availabilityZone: 'us-west-2c',
   });
 
   return dbInstance;

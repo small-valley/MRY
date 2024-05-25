@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, Param, Post, Put } from "@nestjs/common";
-import { ApiBody, ApiTags } from "@nestjs/swagger";
-import { AppController } from "src/app.controller";
+import { ApiBearerAuth, ApiBody, ApiTags } from "@nestjs/swagger";
+import { AppController } from "src/app/app.controller";
 import { CourseService } from "../course/course.service";
 import { PostCoursesDto, PostProgramDto } from "./dto/postProgram.dto";
 import { PutCourseDto, PutProgramDto } from "./dto/putProgram.dto";
@@ -8,6 +8,7 @@ import { ProgramService } from "./program.service";
 
 @Controller("programs")
 @ApiTags("programs")
+@ApiBearerAuth("JWT")
 export class ProgramController extends AppController {
   constructor(
     private readonly programService: ProgramService,

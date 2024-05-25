@@ -4,13 +4,13 @@ import { useEffect, useState } from 'react';
 
 //function, type
 import usePrograms from '../hooks/programs/usePrograms';
-import { Department } from '../testdata';
 //use component
 import ProgramShow from '@/components/programs/ProgramShow';
 import ProgramAdd from '@/components/programs/ProgramAdd';
 import './program.scss';
 
 const BASE_CLASS = 'program';
+const BTN_BASE_CLASS = 'program_btn';
 
 export default function Programs() {
   const { programs, fetchPrograms } = usePrograms();
@@ -23,22 +23,6 @@ export default function Programs() {
   return (
     <>
       <div className={BASE_CLASS}>
-        <div className={`${BASE_CLASS}_header`}>
-          <div className={`${BASE_CLASS}_header_filter`}>
-            <div className={`${BASE_CLASS}_header_filter_selector`}>
-              <select className={`${BASE_CLASS}_header_filter_selector_department`}>
-                <option value="0" key="department">
-                  All Department
-                </option>
-                {Department.map((item, index) => (
-                  <option value={index + 1} key={index + 'department'}>
-                    {item}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-        </div>
         <div className={`${BASE_CLASS}_content`}>
           {programs &&
             programs.map((program, index) => (
@@ -56,7 +40,7 @@ export default function Programs() {
           ) : (
             <>
               <div className={`${BASE_CLASS}_content_wrap_add`}>
-                <button onClick={() => setIsAdd(true)}>
+                <button type="button" className={`${BTN_BASE_CLASS}_add`} onClick={() => setIsAdd(true)}>
                   <Plus size={25} />
                 </button>
               </div>

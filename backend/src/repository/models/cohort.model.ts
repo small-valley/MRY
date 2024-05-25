@@ -7,7 +7,7 @@ export interface CohortModel {
   schedules: Schedule[];
 }
 
-interface Schedule {
+export interface Schedule {
   scheduleId: string;
   startDate: Date;
   endDate: Date;
@@ -15,6 +15,7 @@ interface Schedule {
   courseName: string;
   dayId: string;
   dayName: string;
+  dayHoursPerWeek: number;
   userId: string;
   userFirstName: string;
   roomId: string;

@@ -1,16 +1,17 @@
+import { getAccessToken } from '@/app/actions/common';
+import { CohortsContext } from '@/app/contexts/CohortsContext';
 import { useContext, useEffect, useState } from 'react';
+import { GetCohortsResponse, Instructor, Schedule } from '../../../shared/models/responses/getCohortsResponse';
 import {
-  months,
-  monthDiff,
-  getWeeksInMonth,
   createFormattedWeekFromStr,
   currentStatusColor,
+  getWeeksInMonth,
+  monthDiff,
+  months,
   weekDiff,
 } from '../../lib/timeTableHelper';
-import InstructorAvatar from './InstructorAvatar';
-import { GetCohortsResponse, Instructor, Schedule } from '../../../shared/models/responses/getCohortsResponse';
-import { CohortsContext } from '@/app/contexts/CohortsContext';
 import AvailableInstructorList from './AvailableInstructorList';
+import InstructorAvatar from './InstructorAvatar';
 
 interface Open {
   [key: string]: boolean;
@@ -30,7 +31,7 @@ const TimeTable = () => {
     toSelectMonth: 11,
     toSelectYear: '',
   };
-  const { cohorts, setCohorts, getCohorts } = useContext(CohortsContext);
+  const { cohorts, getCohorts } = useContext(CohortsContext);
   const [instructorAvatarModalOpen, setInstructorAvatarModalOpen] = useState<Open>({});
   const [courseInfoModalOpen, setCourseInfoModalOpen] = useState<Open>({});
   const [scheduleId, setScheduleId] = useState<string>('');
@@ -74,10 +75,11 @@ const TimeTable = () => {
   }, [cohorts]);
 
   const getAvailableInstructors = async (scheduleId: string) => {
-    const baseUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/availability/${scheduleId}`;
+    const baseUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL_A}/availability/${scheduleId}`;
     const response = await fetch(baseUrl, {
       method: 'GET',
       headers: {
+        Authorization: `Bearer ${getAccessToken()}`,
         'Content-Type': 'application/json',
       },
     });
@@ -108,7 +110,7 @@ const TimeTable = () => {
         style={{
           display: 'grid',
           gridAutoFlow: 'column',
-          gridAutoColumns: 'minmax(90px, 1fr)',
+          gridAutoColumns: 'minmax(64px, 1fr)',
           outline: '0.5px solid var(--color-outline)',
           textAlign: 'center',
           height: 'var(--cell-height)',
@@ -128,13 +130,13 @@ const TimeTable = () => {
           style={{
             display: 'grid',
             gridAutoFlow: 'column',
-            gridAutoColumns: 'minmax(90px, 1fr)',
+            gridAutoColumns: 'minmax(64px, 1fr)',
             outline: '0.5px solid var(--color-outline)',
             textAlign: 'center',
             height: 'var(--cell-height)',
           }}
         >
-          <span style={{ margin: 'auto' }}>Week{j}</span>
+          <span style={{ margin: 'auto' }}>W{j}</span>
         </div>
       );
     }
@@ -145,7 +147,7 @@ const TimeTable = () => {
         style={{
           display: 'grid',
           gridAutoFlow: 'column',
-          gridAutoColumns: 'minmax(90px, 1fr)',
+          gridAutoColumns: 'minmax(64px, 1fr)',
           outline: '0.5px solid var(--color-outline)',
           textAlign: 'center',
           height: 'var(--cell-height)',
@@ -217,15 +219,13 @@ const TimeTable = () => {
                       {schedule.course.name !== 'Break' ? (
                         <InstructorAvatar
                           schedule={schedule}
-                          // cohorts={cohorts}
                           open={instructorAvatarModalOpen}
                           setOpen={setInstructorAvatarModalOpen}
                           user={user}
-                          setUser={setUser}
-                          // setCohorts={setCohorts}
                           getCohorts={getCohorts}
                           courseInfoModalOpen={courseInfoModalOpen}
                           fromList={fromList}
+                          setFromList={setFromList}
                         />
                       ) : (
                         <div></div>
@@ -246,7 +246,7 @@ const TimeTable = () => {
             style={{
               display: 'grid',
               gridAutoFlow: 'column',
-              gridAutoColumns: 'minmax(90px, 1fr)',
+              gridAutoColumns: 'minmax(64px, 1fr)',
               outline: '0.5px solid var(--color-outline)',
               textAlign: 'center',
               height: 'var(--cell-height)',
@@ -263,19 +263,21 @@ const TimeTable = () => {
   }
 
   return (
-    <div id="gantt-grid-container__time" style={{ gridTemplateColumns: `repeat(${numMonths}, 1fr)` }}>
-      {monthRows}
-      {dayRows}
-      <div
-        id="gantt-time-period-cell-container"
-        style={{
-          gridColumn: '1/-1',
-          display: 'grid',
-          gridTemplateColumns: `repeat(${numMonths}, 1fr)`,
-          paddingLeft: '0.5px',
-        }}
-      >
-        {cohortRows}
+    <>
+      <div id="gantt-grid-container__time" style={{ gridTemplateColumns: `repeat(${numMonths}, 1fr)` }}>
+        {monthRows}
+        {dayRows}
+        <div
+          id="gantt-time-period-cell-container"
+          style={{
+            gridColumn: '1/-1',
+            display: 'grid',
+            gridTemplateColumns: `repeat(${numMonths}, 1fr)`,
+            paddingLeft: '0.5px',
+          }}
+        >
+          {cohortRows}
+        </div>
       </div>
       {courseInfoModalOpen[scheduleId] && (
         <AvailableInstructorList
@@ -286,7 +288,7 @@ const TimeTable = () => {
           unavailableInstructors={unavailableInstructors}
         />
       )}
-    </div>
+    </>
   );
 };
 

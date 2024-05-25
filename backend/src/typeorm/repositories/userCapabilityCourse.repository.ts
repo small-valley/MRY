@@ -10,13 +10,14 @@ export class UserCapabilityCourseRepository implements IUserCapabilityCourseRepo
     private userCapabilityCourseRepository: Repository<UserCapabilityCourse>,
   ) { }
 
-  async createUserCapabilityCourse({ userId, courseId, isPreference, isDraft }: PostUserCapabilityCourseRequest): Promise<void> {
+  async createUserCapabilityCourse({ userId, courseId, isPreference, isDraft }: PostUserCapabilityCourseRequest): Promise<{userCapabilityCourseId: string}> {
     const userCapabilityCourse = new UserCapabilityCourse();
     userCapabilityCourse.userId = userId;
     userCapabilityCourse.courseId = courseId;
     userCapabilityCourse.isPreference = isPreference || false;
     userCapabilityCourse.isDraft = isDraft || false;
     await this.userCapabilityCourseRepository.save(userCapabilityCourse);
+    return { userCapabilityCourseId:  userCapabilityCourse.id }
   }
 
   async updateUserCapabilityCourse(userCapabilityCourseId: string): Promise<void> {

@@ -1,5 +1,5 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { FRIDAY, MONDAY } from "src/const/date.const";
+import { MONDAY } from "src/const/date.const";
 import { BadRequestError } from "src/error/badRequest.error";
 import { NotFoundError } from "src/error/notFound.error";
 import { BREAK } from "src/repository/consts/course.const";
@@ -9,6 +9,7 @@ import { CourseModel } from "src/repository/models/course.model";
 import { DayModel } from "src/repository/models/day.model";
 import { ScheduleModel } from "src/repository/models/schedule.model";
 import { CohortRepository } from "src/typeorm/repositories/cohort.repository";
+import { TodoRepository } from "src/typeorm/repositories/todo.repository";
 import { CourseService } from "../course/course.service";
 import { DayService } from "../day/day.service";
 import { ProgramService } from "../program/program.service";
@@ -23,6 +24,8 @@ export class ScheduleService {
   private readonly scheduleRepository: IScheduleRepository;
   @Inject("cohortRepository")
   private readonly cohortRepository: CohortRepository;
+  @Inject("todoRepository")
+  private readonly todoRepository: TodoRepository;
   @Inject(UserService)
   private readonly userService: UserService;
   @Inject(RoomService)
@@ -110,15 +113,27 @@ export class ScheduleService {
     }
 
     // update schedule except Date
-    await this.scheduleRepository.updateScheduleCourse({
-      id: scheduleId,
-      startDate: schedule.startDate as unknown as string,
-      endDate: schedule.endDate as unknown as string,
-      courseId: null,
-      dayId: null,
-      instructorId: null,
-      roomId: null,
-    });
+    // await this.scheduleRepository.updateScheduleCourse({
+    //   id: scheduleId,
+    //   startDate: schedule.startDate as unknown as string,
+    //   endDate: schedule.endDate as unknown as string,
+    //   courseId: null,
+    //   dayId: null,
+    //   instructorId: null,
+    //   roomId: null,
+    // });
+
+    const queryRunner = await this.repositoryService.beginTransaction();
+    try {
+      await this.todoRepository.deleteTodo(scheduleId, queryRunner);
+      await this.scheduleRepository.deleteSchedule(scheduleId, queryRunner);
+      await this.repositoryService.commitTransaction(queryRunner);
+    } catch (error) {
+      await this.repositoryService.rollbackTransaction(queryRunner);
+      throw new Error(error);
+    } finally {
+      await this.repositoryService.release(queryRunner);
+    }
   }
 
   async validateScheduleCohort(
@@ -129,8 +144,8 @@ export class ScheduleService {
     programId: string
   ): Promise<{ courseId: string; courseHour: number; currentHour: number }> {
     this.checkDateOrder(startDate, endDate);
-    this.checkDate(startDate, MONDAY);
-    this.checkDate(endDate, FRIDAY);
+    //this.checkDate(startDate, MONDAY);
+    //this.checkDate(endDate, FRIDAY);
     this.checkStartDate(startDate);
 
     // check id existence
@@ -155,7 +170,7 @@ export class ScheduleService {
     return {
       courseId: courseId,
       courseHour: course.hour,
-      currentHour: weeks * day.hoursPerWeek,
+      currentHour: weeks * day?.hoursPerWeek,
     };
   }
 
@@ -170,9 +185,11 @@ export class ScheduleService {
     const isUpdate = !!scheduleId;
 
     this.checkDateOrder(startDate, endDate);
-    this.checkDate(startDate, MONDAY);
-    this.checkDate(endDate, FRIDAY);
-    this.checkStartDate(startDate);
+    //this.checkDate(startDate, MONDAY);
+    //this.checkDate(endDate, FRIDAY);
+    if (!isUpdate) {
+      this.checkStartDate(startDate);
+    }
 
     // get schedule data and overlapping schedules in terms of startDate and endDate, including break time
     const schedules = await this.scheduleRepository.getOverlappingSchedules(
@@ -181,13 +198,18 @@ export class ScheduleService {
       scheduleId,
       cohortId
     );
-    const updateSchedule = schedules.find((schedule) => schedule.id === scheduleId); //
+    const updateSchedule = schedules.find((schedule) => schedule.id === scheduleId);
 
     if (isUpdate) {
       this.checkScheduleId(updateSchedule, scheduleId);
-      this.checkEndDate(updateSchedule.endDate);
+      this.checkEndDate(endDate);
+      this.checkOriginalEndDate(updateSchedule.endDate);
+      // check start date only when original schedule is upcoming
+      if (updateSchedule.startDate > new Date()) {
+        this.checkStartDate(startDate);
+      }
     }
-    this.checkOverlappingWithBreak(schedules, startDate, endDate);
+    //this.checkOverlappingWithBreak(schedules, startDate, endDate);
 
     // check id existence
     let course: CourseModel;
@@ -202,19 +224,19 @@ export class ScheduleService {
 
     cohortId = isUpdate ? updateSchedule.cohortId : cohortId;
 
-    // check course and cohort are belonging to the same program
     if (courseId) {
+      // check course and cohort are belonging to the same program
       await this.programService.isBelongsToTheSameProgramByCohortId(cohortId, courseId);
-      await this.checkCurrentCourseHour(
-        startDate,
-        endDate,
-        courseId,
-        dayId,
-        cohortId,
-        course.hour,
-        day.hoursPerWeek,
-        scheduleId
-      );
+      // await this.checkCurrentCourseHour(
+      //   startDate,
+      //   endDate,
+      //   courseId,
+      //   dayId,
+      //   cohortId,
+      //   course.hour,
+      //   day.hoursPerWeek,
+      //   scheduleId
+      // );
     }
 
     // TODO: considering about schedule which including break time -> create separated schedule records which includes break
@@ -231,21 +253,40 @@ export class ScheduleService {
     }
   }
 
+  private getTimeZoneOffset(): number {
+    // Get the time zone offset in minutes
+    const timeZoneOffsetMinutes = new Date().getTimezoneOffset();
+    // Determine if the offset is ahead or behind UTC
+    return timeZoneOffsetMinutes > 0 ? -1 : 0;
+  }
+
   private checkDate(date: Date, numberOfDate: number) {
     // check start date is Monday
     // check end date is Friday
     const dateString = numberOfDate === MONDAY ? "startDate" : "endDate";
     const dayString = numberOfDate === MONDAY ? "Monday" : "Friday";
     // getDay returns result according to local time zone
-    if (!(date.getDay() === numberOfDate)) {
+    // if (!(date.getDay() === numberOfDate + this.getTimeZoneOffset())) {
+    if (!(date.getUTCDay() === numberOfDate)) {
       throw new BadRequestError(`${dateString} should be ${dayString}.`);
     }
   }
 
   private checkStartDate(startDate: Date) {
     // check startDate is not smaller than current date
-    if (startDate <= new Date()) {
+    const currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0);
+    if (startDate <= currentDate) {
       throw new BadRequestError("startDate should be greater than current date.");
+    }
+  }
+
+  private checkEndDate(endDate: Date) {
+    // check endDate is not smaller than current date
+    const currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0);
+    if (endDate <= currentDate) {
+      throw new BadRequestError("endDate should be greater than current date.");
     }
   }
 
@@ -256,7 +297,7 @@ export class ScheduleService {
     }
   }
 
-  private checkEndDate(endDate: Date | null) {
+  private checkOriginalEndDate(endDate: Date | null) {
     // check the schedule is not ended
     if (endDate && new Date(endDate) <= new Date()) {
       throw new BadRequestError(`Ended schedule cannot be updated.`);
@@ -325,7 +366,7 @@ export class ScheduleService {
     const queryRunner = await this.repositoryService.beginTransaction();
     try {
       // insert new schedule
-      await this.scheduleRepository.insertSchedule(
+      const newScheduleId = await this.scheduleRepository.insertSchedule(
         {
           cohortId: request.cohortId,
           startDate: request.startDate,
@@ -337,24 +378,25 @@ export class ScheduleService {
         },
         queryRunner
       );
+      await this.todoRepository.createTodosFromTemplate([newScheduleId], queryRunner);
       // update overlapped schedules (create blank schedules)
-      await Promise.all(
-        schedules.map(async (schedule) => {
-          await this.scheduleRepository.updateScheduleCourse(
-            {
-              id: schedule.id,
-              // if schedule is break, not update dates
-              startDate: schedule.courseName === BREAK ? this.getUtcDateString(schedule.startDate) : null,
-              endDate: schedule.courseName === BREAK ? this.getUtcDateString(schedule.endDate) : null,
-              courseId: schedule.courseId,
-              dayId: schedule.dayId,
-              instructorId: null,
-              roomId: null,
-            },
-            queryRunner
-          );
-        })
-      );
+      // await Promise.all(
+      //   schedules.map(async (schedule) => {
+      //     await this.scheduleRepository.updateScheduleCourse(
+      //       {
+      //         id: schedule.id,
+      //         // if schedule is break, not update dates
+      //         startDate: schedule.courseName === BREAK ? this.getUtcDateString(schedule.startDate) : null,
+      //         endDate: schedule.courseName === BREAK ? this.getUtcDateString(schedule.endDate) : null,
+      //         courseId: schedule.courseId,
+      //         dayId: schedule.dayId,
+      //         instructorId: null,
+      //         roomId: null,
+      //       },
+      //       queryRunner
+      //     );
+      //   })
+      // );
       await this.repositoryService.commitTransaction(queryRunner);
     } catch (error) {
       await this.repositoryService.rollbackTransaction(queryRunner);
@@ -415,19 +457,19 @@ export class ScheduleService {
             );
           } else {
             // update overlapped schedules (create blank schedules)
-            await this.scheduleRepository.updateScheduleCourse(
-              {
-                id: schedule.id,
-                // if schedule is break, not update dates
-                startDate: schedule.courseName === BREAK ? this.getUtcDateString(schedule.startDate) : null,
-                endDate: schedule.courseName === BREAK ? this.getUtcDateString(schedule.endDate) : null,
-                courseId: schedule.courseId,
-                dayId: schedule.dayId,
-                instructorId: null,
-                roomId: null,
-              },
-              queryRunner
-            );
+            // await this.scheduleRepository.updateScheduleCourse(
+            //   {
+            //     id: schedule.id,
+            //     // if schedule is break, not update dates
+            //     startDate: schedule.courseName === BREAK ? this.getUtcDateString(schedule.startDate) : null,
+            //     endDate: schedule.courseName === BREAK ? this.getUtcDateString(schedule.endDate) : null,
+            //     courseId: schedule.courseId,
+            //     dayId: schedule.dayId,
+            //     instructorId: null,
+            //     roomId: null,
+            //   },
+            //   queryRunner
+            // );
           }
         })
       );

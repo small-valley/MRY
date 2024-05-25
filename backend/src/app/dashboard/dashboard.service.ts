@@ -10,30 +10,27 @@ export class DashboardService {
   @Inject("userRepository")
   private readonly userRepository: IUserRepository;
 
-  async getDashboard(): Promise<GetDashboardResponse> {
-    const dashboard = await this.dashboardRepository.getDashboard();
+  async getDashboard(userId: string, role: string): Promise<GetDashboardResponse> {
+    const dashboard = await this.dashboardRepository.getDashboard(role === "manager" ? null : userId);
+    const mostRecentSchedule = dashboard
+      .filter((cohort) => new Date() < cohort.startDate)
+      .sort((a, b) => {
+        return a.startDate.getTime() - b.startDate.getTime();
+      })
+      .slice(0, 1);
     return {
       ongoing: dashboard
         .filter((cohort) => cohort.startDate <= new Date())
         .map((cohort) => {
           return {
             cohortId: cohort.cohortId,
-            cohortName: cohort.cohortName,
-            courseName: cohort.courseName,
-            period: cohort.period,
-            day: cohort.day,
-          };
-        }),
-      upcoming: dashboard
-        .filter((cohort) => new Date() < cohort.startDate)
-        .map((cohort) => {
-          return {
-            cohortId: cohort.cohortId,
+            scheduleId: cohort.scheduleId,
             cohortName: cohort.cohortName,
             courseName: cohort.courseName,
             period: cohort.period,
             day: cohort.day,
             startDate: cohort.startDate,
+            endDate: cohort.endDate,
             todos: cohort.todos.map((todo) => {
               return {
                 id: todo.id,
@@ -44,9 +41,34 @@ export class DashboardService {
               };
             }),
           };
-        })
-        .sort((a, b) => {
-          return a.startDate.getTime() - b.startDate.getTime();
+        }),
+      upcoming: dashboard
+        .filter(
+          (cohort) =>
+            cohort.startDate.getFullYear() === mostRecentSchedule[0].startDate.getFullYear() &&
+            cohort.startDate.getMonth() === mostRecentSchedule[0].startDate.getMonth() &&
+            cohort.startDate.getDate() === mostRecentSchedule[0].startDate.getDate()
+        )
+        .map((cohort) => {
+          return {
+            cohortId: cohort.cohortId,
+            scheduleId: cohort.scheduleId,
+            cohortName: cohort.cohortName,
+            courseName: cohort.courseName,
+            period: cohort.period,
+            day: cohort.day,
+            startDate: cohort.startDate,
+            endDate: cohort.endDate,
+            todos: cohort.todos.map((todo) => {
+              return {
+                id: todo.id,
+                title: todo.title,
+                description: todo.description,
+                dueDate: todo.dueDate,
+                isCompleted: todo.isCompleted,
+              };
+            }),
+          };
         }),
       today: dashboard
         .filter((cohort) => cohort.startDate <= new Date())
@@ -57,6 +79,8 @@ export class DashboardService {
             courseName: cohort.courseName,
             period: cohort.period,
             day: cohort.day,
+            startDate: cohort.startDate,
+            endDate: cohort.endDate,
             room: cohort.room,
             instructor: cohort.instructor,
           };

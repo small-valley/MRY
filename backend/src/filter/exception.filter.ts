@@ -1,9 +1,4 @@
-import {
-  ArgumentsHost,
-  Catch,
-  ExceptionFilter,
-  HttpStatus,
-} from "@nestjs/common";
+import { ArgumentsHost, Catch, ExceptionFilter, HttpStatus, UnauthorizedException } from "@nestjs/common";
 import { HttpAdapterHost } from "@nestjs/core";
 import { BadRequestError } from "src/error/badRequest.error";
 import { NotFoundError } from "src/error/notFound.error";
@@ -24,6 +19,9 @@ export class AllExceptionsFilter implements ExceptionFilter {
         break;
       case NotFoundError:
         httpStatus = HttpStatus.NOT_FOUND;
+        break;
+      case UnauthorizedException:
+        httpStatus = HttpStatus.UNAUTHORIZED;
         break;
       default:
         httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;

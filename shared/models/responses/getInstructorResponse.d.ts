@@ -11,14 +11,17 @@ export interface GetInstructorResponse {
 }
 
 interface UserCapabilityTime {
+  id?: string;
   name: string;
 }
 
 interface UserCapabilityDay {
+  id?: string;
   name: string;
 }
 
 interface UserCapabilityCourse {
+  id?: string;
   name: string;
   color: string;
   program: Program;

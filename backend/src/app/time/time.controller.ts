@@ -1,12 +1,13 @@
 import { Controller, Get } from "@nestjs/common";
-import { ApiTags } from "@nestjs/swagger";
-import { AppController } from "src/app.controller";
+import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
+import { AppController } from "src/app/app.controller";
 import { BaseResponse } from "../../../../shared/models/responses/baseResponse";
 import { GetPeriodsResponse } from "../../../../shared/models/responses/getPeriodsResponse";
 import { TimeService } from "./time.service";
 
 @Controller("periods")
 @ApiTags("periods")
+@ApiBearerAuth("JWT")
 export class TimeController extends AppController {
   constructor(private readonly timeService: TimeService) {
     super();
