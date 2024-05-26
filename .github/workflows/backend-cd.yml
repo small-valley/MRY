@@ -70,6 +70,9 @@ jobs:
       #     aws configure set region $AWS_DEFAULT_REGION
 
       - name: Deploy with CDK
+        env:
+          AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+          AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
         run: |
           npm install -g aws-cdk
           cd aws-cdk && npm run deploy:backend
