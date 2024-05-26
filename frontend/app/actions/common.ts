@@ -133,14 +133,14 @@ export const getDays = async (): Promise<GetDaysResponse[]> => {
 };
 
 export const setCookie = (accessToken: string) => {
-  document.cookie = `access_token=${accessToken}; domain=mry-ciccc.me; path=/; SameSite=strict; Secure; max-age=${
-    1 * 60 * 60 * 2
-  }`;
+  document.cookie = `access_token=${accessToken}; domain=${
+    process.env.COOKIE_DOMAIN
+  }; path=/; SameSite=strict; Secure; max-age=${1 * 60 * 60 * 2}`;
 };
 
 export const deleteCookie = () => {
   // to delete cookie, set expires as past date
-  document.cookie = `access_token=; expires=Thu, 01 Jan 1970 00:00:00 GMT; domain=localhost; path=/;`;
+  document.cookie = `access_token=; expires=Thu, 01 Jan 1970 00:00:00 GMT; domain=${process.env.COOKIE_DOMAIN}; path=/;`;
 };
 
 export const getAccessToken = () => {
