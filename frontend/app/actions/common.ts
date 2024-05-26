@@ -133,7 +133,7 @@ export const getDays = async (): Promise<GetDaysResponse[]> => {
 };
 
 export const setCookie = (accessToken: string) => {
-  document.cookie = `access_token=${accessToken}; domain=localhost; path=/; SameSite=strict; Secure; max-age=${
+  document.cookie = `access_token=${accessToken}; domain=mry-ciccc.me; path=/; SameSite=strict; Secure; max-age=${
     1 * 60 * 60 * 2
   }`;
 };
