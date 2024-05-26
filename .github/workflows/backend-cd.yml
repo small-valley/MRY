@@ -40,8 +40,9 @@ jobs:
       - name: Install dependencies
         run: |
           cd aws-cdk && npm ci
-          cd backend/layer && npm ci
-          cd ../../../backend && npm ci
+          cd backend/layer/a && npm ci
+          cd ../b && npm ci
+          cd ../../../../backend && npm ci
 
       - name: Build Nest.js app
         run: |
