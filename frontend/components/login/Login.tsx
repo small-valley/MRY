@@ -37,6 +37,7 @@ export default function Login() {
           setMessage('');
         }, 5000);
       } else {
+        console.log(response.accessToken);
         setCookie(response.accessToken);
         router.push('/home');
       }
