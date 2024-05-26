@@ -47,14 +47,14 @@ jobs:
         run: |
           cd backend && npm run build
 
-      - name: Migration
-        run: |
-          mkdir ~/.ssh
-          ssh-keyscan -H $BASTION_HOST >> ~/.ssh/known_hosts
-          eval `ssh-agent -s`
-          ssh-add - <<< "$BASTION_SSH_KEY"
-          ssh -fN -v -L $POSTGRE_DATABASE_PORT:$POSTGRES_DATABASE_HOST:$POSTGRE_DATABASE_PORT $BASTION_USER@$BASTION_HOST
-          cd backend && npm run db:migration
+      # - name: Migration
+      #   run: |
+      #     mkdir ~/.ssh
+      #     ssh-keyscan -H $BASTION_HOST >> ~/.ssh/known_hosts
+      #     eval `ssh-agent -s`
+      #     ssh-add - <<< "$BASTION_SSH_KEY"
+      #     ssh -fN -v -L $POSTGRE_DATABASE_PORT:$POSTGRES_DATABASE_HOST:$POSTGRE_DATABASE_PORT $BASTION_USER@$BASTION_HOST
+      #     cd backend && npm run db:migration
 
       # - name: Install AWS CLI
       #   run: |

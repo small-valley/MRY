@@ -3,7 +3,7 @@ name: CD-frontend
 on:
   push:
     branches:
-      - development
+      - test
     paths:
       - 'frontend/**'
       - 'shared/**'
