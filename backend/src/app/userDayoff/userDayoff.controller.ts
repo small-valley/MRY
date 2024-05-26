@@ -11,7 +11,7 @@ export class UserDayoffController extends AppController {
     super();
   }
 
-  @Get("/:userId")
+  @Get("user/:userId")
   async getUserDayoff(@Param("userId") userId: string) {
     const result = await this.userDayoffService.getUserDayoff(userId);
     return this.ok(result);

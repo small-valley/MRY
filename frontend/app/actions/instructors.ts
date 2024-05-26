@@ -77,10 +77,9 @@ export const getInstructorById = async (id: string): Promise<GetInstructorRespon
   }
 };
 
-// need return data Type
 export const getVacation = async (id: string): Promise<GetUserDayoffsResponse[]> => {
   try {
-    const baseUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL_C}/userDayoffs/${id}`;
+    const baseUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL_C}/userDayoffs/user/${id}`;
 
     const response = await fetch(baseUrl, {
       method: 'GET',

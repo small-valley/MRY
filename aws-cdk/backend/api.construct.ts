@@ -250,7 +250,7 @@ export class ApiConstruct extends Construct {
     });
 
     const userDayoffsResource = apiC.root.addResource('userDayoffs');
-    userDayoffsResource.addResource('{userId}').addMethod('GET', new LambdaIntegration(handlerC));
+    userDayoffsResource.addResource('user').addResource('{userId}').addMethod('GET', new LambdaIntegration(handlerC));
     userDayoffsResource.addMethod('POST', new LambdaIntegration(handlerC));
     const userDayoffsWithIdResource = userDayoffsResource.addResource('{userDayoffId}');
     userDayoffsWithIdResource.addMethod('PUT', new LambdaIntegration(handlerC));
