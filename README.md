@@ -2,6 +2,10 @@
 
 This repository is copied from original private repository for a program project in my school
 
+- Available user accounts for demo
+  - Email: manager.rodrigo@gmail.com Password: password
+  - Email: instructor.mariam@gmail.com Password: password
+
 ## Introduction video
 
 [![MRY Introduction video](http://img.youtube.com/vi/mbSkUSxUYb0/0.jpg)](https://www.youtube.com/watch?v=mbSkUSxUYb0 'MRY Introduction video')
@@ -27,7 +31,7 @@ I took cahrge of backend (NestJs), database table design, infrastructure (GitHub
 ## Features
 
 - Authentication
-  - local and OAuth(Google Only)
+  - local and OAuth(Google Only, <i>not working in demo environment</i>)
   - Signin/up/Logout with JWT token
 - Dashboard
   - upcoming schedule view for a both manager and instructor
