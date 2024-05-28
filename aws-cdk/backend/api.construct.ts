@@ -2,6 +2,7 @@ import * as cdk from 'aws-cdk-lib';
 import { LambdaIntegration, RestApi } from 'aws-cdk-lib/aws-apigateway';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { Code, Function, LayerVersion, Runtime } from 'aws-cdk-lib/aws-lambda';
+import * as s3 from 'aws-cdk-lib/aws-s3';
 import { Construct } from 'constructs';
 import { resolve } from 'path';
 import { db } from './db.instance';
@@ -16,6 +17,9 @@ export class ApiConstruct extends Construct {
 
     // Create an RDS instance
     const dbInstance = db(this, vpcInstance);
+
+    // Reference an existing S3 bucket by name
+    const existingBucket = s3.Bucket.fromBucketName(this, 'ExistingBucket', process.env.AWS_BUCKET_NAME);
 
     // pack all external deps in layer
     // to avoid maximum size (250MB) of a layer, split into to layers
@@ -57,13 +61,13 @@ export class ApiConstruct extends Construct {
         JWT_EXPIRATION: process.env.JWT_EXPIRATION,
         JWT_SECRET: process.env.JWT_SECRET,
         AWS_BUCKET_NAME: process.env.AWS_BUCKET_NAME,
-        //AWS_DEFAULT_REGION: process.env.AWS_DEFAULT_REGION,
-        AWS_ACCESS_KEY_ID: process.env.AWS_ACCESS_KEY_ID,
-        AWS_SECRET_ACCESS_KEY: process.env.AWS_SECRET_ACCESS_KEY,
       },
       timeout: cdk.Duration.seconds(10),
       memorySize: 128,
     });
+
+    // Grant the Lambda function permission to write to the S3 bucket
+    existingBucket.grantWrite(handlerA);
 
     const handlerB = new Function(this, 'HandlerB', {
       code: Code.fromAsset(resolve(__dirname, '../../backend/dist'), {
