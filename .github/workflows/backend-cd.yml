@@ -32,6 +32,7 @@ jobs:
       GOOGLE_OAUTH_CLIENT_SECRET: ${{ secrets.GOOGLE_OAUTH_CLIENT_SECRET }}
       JWT_EXPIRATION: ${{ secrets.JWT_EXPIRATION }}
       JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      AWS_BUCKET_NAME: ${{ secrets.AWS_BUCKET_NAME }}
 
     steps:
       - name: Checkout code

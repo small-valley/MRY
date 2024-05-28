@@ -1,5 +1,5 @@
-import { Injectable } from '@nestjs/common';
-import * as AWS from 'aws-sdk';
+import { Injectable } from "@nestjs/common";
+import * as AWS from "aws-sdk";
 
 @Injectable()
 export class S3Service {
@@ -10,17 +10,17 @@ export class S3Service {
 
   constructor() {
     AWS.config.update({
-      region: process.env.AWS_REGION,
+      region: process.env.AWS_DEFAULT_REGION,
     });
   }
 
   async uploadImage(imageData: Buffer, userId: string): Promise<string> {
     const params = {
-      Bucket: process.env.AWS_BUCKET_NAME || '',
+      Bucket: process.env.AWS_BUCKET_NAME || "",
       Key: `avatars/${userId}.png`,
       Body: imageData,
-      ACL: 'public-read',
-      ContentType: 'image/png',
+      ACL: "public-read",
+      ContentType: "image/png",
     };
 
     const { Location } = await this.s3.upload(params).promise();
